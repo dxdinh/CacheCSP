@@ -1,0 +1,222 @@
+<script language="Cache"  runat="server">
+ 	// setup stream array
+ 	Set tmpStream = ##class(%Stream.GlobalCharacter).%New()
+	
+	//Set tmp = ..LanguageSetup(.tmpStream)
+	
+	Set tmp = ..Localization(.tmpStream)
+	w tmpStream
+	
+	
+	//Set listObj = ##class(%ListOfDataTypes).%New()
+	//do ##class(QReport.CoverPage).Exceptions("^test",.listObj,.ec,.em)
+	
+//set Status = ##class(NGUtils.ValidTestConfig).JSONValidTestConfig(PageNo, PageSize, PCode, ACode, AName,MCode, MName, ICode, IName, RCode, RName,.JsonData, .ErrorCode,.ErrorMessage)		
+	
+	
+	/*
+	Set commentObj = ##class("QReport.Comment").%New()
+	Do commentObj.BuildObj("<<<<<<<<<<<<<<<<<< Exception Page Title >>>>>>>>>>>>>>>>>>")
+	
+	Set langSetupObj = ##class("QReport.LanguageSetup").%New()
+	Do langSetupObj.BuildObj()
+	
+	
+	Set pageHeaderFooterObj =  ##class("QReport.PageHeaderFooter1").%New()
+	Do pageHeaderFooterObj.BuildObj()
+	
+	Set pageHeaderFooterObj =  ##class("QReport.PageHeaderFooter").%New()
+	Set pageHeaderFooterObj = ##class("NGReport.Report").BuildHeaderPage()
+	
+	
+	Set pageObj =  ##class(%ZEN.proxyObject).%New() 
+	Set pageObj.PageHeaderFooter = pageHeaderFooterObj
+	
+	Set eqasNewsObj = ##class("QReport.EQASNews").%New()
+	Do eqasNewsObj.BuildObj()
+	
+	
+	
+	Set custObj = ##class("QReport.CustomerInformation").%New() 
+	Do custObj.BuildObj()
+	
+	set custInfoObj =  ##class(%ZEN.proxyObject).%New() 
+	Set custInfoObj.CustomerInformation = custObj
+	
+	*/
+	
+	//Set status = listObj.Insert(commentObj)
+	//Set status = listObj.Insert(langSetupObj)
+	//Set status = listObj.Insert(pageHeaderFooterObj)
+	//Set status = listObj.Insert(pageObj)
+	//Set status = listObj.Insert(eqasNewsObj)
+	//Set status = listObj.Insert(custInfoObj)
+	
+	//w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,listObj,,,,"twe")
+	
+
+	//Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tmpStream, languageSetup,,,,"biw")
+	//Do ..OutputStream(tmpStream, "")	
+	//set fName =  "/unity_eqas/xfer/EQASLocalizationDINH2.json" 
+ 	//Do ..OutputStream(tmpStream, fName)
+</script>
+
+<script language="Cache" method="LanguageSetup" arguments="tmpStream:%Stream.GlobalCharacter" returntype="%String">
+ w "Hello"
+
+ // create a comment object
+ Set commentObj = ##class(%ZEN.proxyObject).%New()
+ Set commentObj."**Comment" = "<<<<<<<<<<<<<<<<<< Localization Section >>>>>>>>>>>>>>>>>>"
+ //w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,commentObj,,,,"tw")
+ //write comment object to the stream
+ Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tmpStream, commentObj,,,,"biw")
+  
+ // create language setup object
+ Set languageSetup = ##class(%ZEN.proxyObject).%New() 
+ Set characterSetObject = ##class(%ZEN.proxyObject).%New()
+ Set characterSetObject.CharacterSet = "Ansi"
+ Set languageSetup.LanguageSetup = characterSetObject
+ 
+ //w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,languageSetup,,,,"tw")
+ //write language object to the stream
+ Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tmpStream, languageSetup,,,,"biw")
+ //Quit ""
+
+</script>
+
+<script language="Cache" method="Localization" arguments="tmpStream:%Stream.GlobalCharacter" returntype="%String">	
+	
+	Set langObj = ##class(%ZEN.proxyObject).%New()
+		
+	
+	Set sql = "SELECT LangCode FROM LabProfile.Languages WHERE EQASSupport = 1"
+	
+    Set rsLang = ##class(%ResultSet).%New()
+    Set status = rsLang.Prepare(sql)
+    Set status = rsLang.Execute()	
+
+	While (rsLang.Next())
+	{
+		
+		set LanguageKey = rsLang.Data("LangCode")
+		set ULanguageKey = $ZCONVERT(LanguageKey, "U")
+
+	
+		Set lblArray = ##class(%ArrayOfDataTypes).%New()
+	    Set mSQL = "Select %Exact(Code) Code, %Exact(Translations) Translations from NGReport.EqasTranslation " _
+	              " where SR = 1 and lang = '"_ LanguageKey _ "' " _
+	              " order by Code "         
+	        
+	    Set rs = ##class(%ResultSet).%New()
+	    set status = rs.Prepare(mSQL)
+	    set status = rs.Execute()
+	    
+	        
+	    While (rs.Next()) // go to the next row of the result set
+	    {
+	 		Do lblArray.SetAt($get(rs.Data("Translations")),$get(rs.Data("Code")))   
+	   	}
+	    do rs.%Close()
+	    set rs = ""
+		
+		
+		// adding each language to the proxy languageObject 
+		// **** this need to be reworked so it can be dynamically added for new languages
+	    if ( ULanguageKey = "EN") { set langObj.EN = lblArray }
+		elseif (ULanguageKey = "ES") {set langObj.ES = lblArray}
+		elseif (ULanguageKey = "FR") { set langObj.FR = lblArray}
+		elseif (ULanguageKey = "IT") { set langObj.IT = lblArray}
+		elseif (ULanguageKey = "RU") { set langObj.RU = lblArray}
+
+	}
+	Do rsLang.%Close()
+	Set rsLang = ""
+	
+	// create localization object
+	set localeObj = ##class(%ZEN.proxyObject).%New()
+	
+	Set localeObj.Localization = langObj
+	
+	
+	 //write localeObj object to the stream
+	
+	Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tmpStream, localeObj,,,,"biwu")
+	
+	// End of Data Marker object
+	Set dataMarker = ##class(%ZEN.proxyObject).%New()
+	Set dataMarker."**EndOfDataMarker**" = " "
+	//w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,dataMarker,,,,"alotw")
+	Do ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONStreamFromObject(.tmpStream, dataMarker,,,,"biwu")
+	
+	
+		
+		
+	
+</script>
+<script language="Cache" method="OutputStream" arguments="tmpStream:%Stream.GlobalCharacter, fileName:%String" returntype="%String">
+ 
+ 	Do tmpStream.Rewind()
+ 	If (fileName = "")
+ 	{
+	 	//output to screen
+		
+		While 'tmpStream.AtEnd {
+				w tmpStream.Read()
+			}	 	
+ 	}
+ 	Else 
+ 	{
+		If ##class(%File).Exists(fileName)
+			{
+				Do ##class(%File).Delete(fileName)
+			}    
+					
+			Set newFile = ##class(%Stream.FileCharacter).%New()
+			Set newFile.Filename=fileName  			
+			
+			Do newFile.CopyFromAndSave(tmpStream)	
+			w "Save to " _ fileName 	
+ 	}
+ 
+ Quit ""
+
+</script>
+
+<script language="Cache" method="Test" arguments="" returntype="%String">
+ 
+ 
+ 	
+	set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	
+	
+	For mode=1:1:4 {
+		
+		Set proxyObj.mode = mode + 1
+		
+		}
+</script>
+
+<script language="Cache" method="SelectPersonalReport" 
+	arguments="rptType:%String, labNumber:%String, lotNumber:%String, year:%String, month:%String">
+
+	
+	
+	Set mSQL = "SELECT LotNumber, FileName, ReportDate FROM dbo.UnityPersonalReports "
+	
+	Set fileName = rptType _ labNumber _  "%-" _ year _ month _ "01"
+	
+	Set whereClause = " WHERE  FileName LIKE '" _ fileName _ "'"
+	if (lotNumber '= "")
+	{
+		Set fileName = rptType _ labNumber _ lotNumber _ "-" _ year _ month _ "01"
+		Set whereClause = " WHERE FileName  = '" _ fileName _ "'"
+		
+	}
+	
+	Set mSQL = mSQL _  whereClause  _ " ORDER BY lotNumber "
+	//w mSQL, !
+	//Quit
+	
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+	
+</script>

@@ -1,0 +1,13 @@
+<script language="Cache"  runat="server">
+	set ErrorMessage = "", ErrorCode = 0
+	Set JsonData = "", CommentId = ""	
+					
+ 	set CommentId = $get(%request.Data("CommentId",1))
+	set PageNo = $get(%request.Data("page",1))
+ 	set PageSize = $get(%request.Data("rows",1))
+
+	set Status = ##class(NGUtils.ValidTestConfig).JSONPagingComment(PageNo, PageSize, CommentId, .JsonData, .ErrorCode,.ErrorMessage)
+	
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,JsonData,,,,"twe")
+
+</script>

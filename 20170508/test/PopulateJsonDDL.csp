@@ -1,0 +1,86 @@
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<title>Populate Json DropDownList</title>
+
+
+<script type="text/javascript" charset="utf-8">
+$(function(){
+	$("#loadingDiv").hide ();
+	LoadInstrument2();
+})
+
+
+function LoadInstrument2()
+{
+	$("#loadingDiv").show ();
+	var getInstrument = $.getJSON( "../json/GetJsonData.csp",
+					{programID: 11, cycleNum: 11, sample: "1-4"
+						, analyteID: "*"
+						, methodID: "*"
+						, ajax: 'true'}, function (json) {
+
+  		var options = ''
+		for (var i = 0; i < json.children.length; i++) {        
+        	//console.log('instrumentName : ' +  json.children[i].instrumentName);
+        	//console.log('i : ' + i );
+        	options += '<option value="' + json.children[i].instrumentID + '">' + json.children[i].instrumentName + '</option>';
+      }    
+     	$("select#ddlInstrument").html(options);
+    
+	});	
+	
+	$.when(getInstrument).done(function(result2, result1) {
+			$("#loadingDiv").hide ();
+ 	
+	});
+}
+
+
+function LoadInstrument ()
+{
+	
+	console.log ('Hello me');
+    $.getJSON("../json/GetJsonData.csp",{id: $(this).val(), ajax: 'true'}, function(j){
+      var options = '';
+      for (var i = 0; i < j.length; i++) {
+        options += '<option value="' + j[i].optionValue + '">' + j[i].optionDisplay + '</option>';
+      }
+      $("select#ddlInstrument").html(options);
+    })
+	
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<form>
+  <label for="ddlMethod">Job Function:</label>
+  <select name="ddlMethod" id="ddlMethod">
+  </select>
+
+
+  <noscript>
+    <input type="submit" name="action" value="Load Individuals" />
+  </noscript>
+  
+ <div id='loadingDiv'>
+    Please wait...  <img src='../images/busy.gif' />
+ </div>   
+  
+  <label for="ddlInstrument">Instrument</label>
+  <select name="ddlInstrument" id="ddlInstrument">
+  </select>
+  
+  
+	<input type="submit" name="action" value="Book" />
+</form>
+
+</body>
+</html>

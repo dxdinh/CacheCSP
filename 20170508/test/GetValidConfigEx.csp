@@ -1,0 +1,8 @@
+{"records":"1000000","page":2,"total":50000,
+"rows":[
+{"Analyte":"395","AnalyteName":"11-Deoxycortisol","Instrument":"466","InstrumentName":"Beckman Coulter Immunotech","Method":"38","MethodName":"RIA","Reagent":"6","ReagentName":"Dedicated Reagent"}
+,{"Analyte":"395","AnalyteName":"11-Deoxycortisol","Instrument":"1030","InstrumentName":"DRG International, Inc.","Method":"38","MethodName":"RIA","Reagent":"6","ReagentName":"Dedicated Reagent"}
+,{"Analyte":"395","AnalyteName":"11-Deoxycortisol","Instrument":"1177","InstrumentName":"DIAsource ImmunoAssays","Method":"38","MethodName":"RIA","ProgramExclude":"None","ProgramInclude":"All","Reagent":"6","ReagentName":"Dedicated Reagent","RecordNo":"3"}
+,{"Analyte":"395","AnalyteName":"11-Deoxycortisol","Instrument":"2481","InstrumentName":"Perkin Elmer Lambda 35","Method":"38","MethodName":"RIA","ProgramExclude":"None","ProgramInclude":"All","Reagent":"6","ReagentName":"Dedicated Reagent","RecordNo":"4"}
+
+]}

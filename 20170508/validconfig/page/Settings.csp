@@ -1,0 +1,35 @@
+<script language="cache" method="OnPreHTTP" arguments="" returntype="%Boolean">
+If ($Get(%session.Data("USER_NAME"),"")="")	
+	{
+		Set %response.Redirect="http://www.google.com"
+	}
+quit 1
+</script>
+
+<script language="Cache" runat="server">
+	
+	//Set virtualDir = "/csp/ngeqas"
+	set CurrentNameSpace = $ZUTIL(39)
+	Set virtualDir = "/csp/" _ $ZConvert(CurrentNameSpace,"L")
+	Set %session.Data("USER_IP")= %request.CgiEnvs("REMOTE_ADDR")	
+	//Set %session.Data("USER_ID")= "ddinh"
+	//Set %session.Data("USER_NAME")= "ddinh"
+	Set logonFrom = %session.Data("USER_IP")	
+	If ($Get(%session.Data("USER_NAME"),"")="")	
+	{
+		//&js<alert("Your session expired. Please re-login ");>
+		//&js<CSPPage.document.location ="http://www.google.com" >
+		//Set %response.Redirect="http://www.google.com"
+		Do ..ToGoogle()
+
+	}
+</script>
+
+<script language="cache" method="ToGoogle" arguments="" returntype="%Boolean">
+Set %response.Redirect="http://www.google.com"
+If ($Get(%session.Data("USER_NAME"),"")="")	
+	{
+		Set %response.Redirect="http://www.google.com"
+	}
+quit 1
+</script>

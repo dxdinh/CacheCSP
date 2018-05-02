@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ 	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="//code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" type="text/css" rel="stylesheet" media="all">
+        <link href="//maxcdn.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" >
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" >
+    
+    <script data-cfasync="false" src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script data-cfasync="false" src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js"></script>
+    <script data-cfasync="false" src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+
+
+<script language="javascript">
+
+//alert ('Hello world + ' + '');
+var permission = '';
+
+
+$('#myModal').on('shown.bs.modal', function () {
+ 
+    var progress = setInterval(function() {
+    var $bar = $('.bar');
+
+    if ($bar.width()==500) {
+      
+        // complete
+      
+        clearInterval(progress);
+        $('.progress').removeClass('active');
+        $('#myModal').modal('hide');
+        $bar.width(0);
+        
+    } else {
+      
+        // perform processing logic here
+      
+        $bar.width($bar.width()+50);
+    }
+    
+    $bar.text($bar.width()/5 + "%");
+	}, 800);
+  
+  
+}) 
+
+</script>	
+	
+	<link href="/csp/ngeqas/reports/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) jQuery v2 no longer support IE 6/7/8/9 -->
+	<script src="/csp/ngeqas/js/jquery-2.2.4.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="/csp/ngeqas/reports/bootstrap/js/bootstrap.min.js"></script>
+	
+	
+	
+</head>
+
+<body>
+	<div class="container">			
+ 				
+
+	 	<!-- Fixed navbar -->
+	    <nav class="navbar navbar-default">
+	      <div class="container">
+	        <div class="navbar-header">
+	          <a class="navbar-brand">Report Search Util</a>
+	        </div>
+	        <div id="navbar" class="navbar-collapse collapse">
+	          <ul class="nav navbar-nav">
+	            <li class="active"><a href="/csp/ngeqas/reports/SearchReports.csp">Unity</a></li>
+	            <li><a href="../SearchEQASReports.csp">EQAS</a></li>
+	        </div><!--/.nav-collapse -->
+	      </div>
+	    </nav>
+	</div><!--/container -->
+ 		
+	<div class="container">		 			
+		<div class="row">
+		<div class="col-xs-2">
+			<label for="ddlYear">Year</label>
+			<select id="ddlYear" class="form-control input-sm" aria-describedby="basic-addon1">
+				  <option></option>
+				  <option>2016</option>
+				  <option>2016</option>
+				  <option>2016</option>
+				  <option>2016</option>
+				  <option>2016</option> 
+				 </select>			  				  				
+		</div>
+			
+		<div class="col-xs-1">
+			<label for="ddlMonth">Month</label>
+			<select id="ddlMonth" class="form-control input-sm" aria-describedby="basic-addon1">
+				  <option></option>
+				  <option>01</option>
+				  <option>02</option>
+				  <option>03</option>
+				  <option>04</option>
+				  <option>05</option> 
+				 </select>			  				  				
+		</div>
+			<div class="col-xs-2">
+				<label for="ddlReportType">Report Type</label>
+				<select id="ddlReportType" class="form-control" aria-describedby="sizing-addon1">
+				  <option></option>  					
+				  <option>AL</option>
+				  <option>AS</option>
+				  <option>ME</option>
+				  <option>WW</option>
+				  <option>MF</option> 
+				</select>
+		
+		</div> <!-- row --> 		
+	</div>  	<!-- end of container  --> 	
+	
+<div class="container">
+  <h1>Please Wait Modal Example</h1>
+  <p>Click button to run demo..</p>
+  <a href="#myModal" role="button" class="btn btn-primary" data-toggle="modal">Submit</a>
+</div>
+
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><i class="fa fa-clock-o"></i> Please Wait</h4>
+      </div>
+      <div class="modal-body center-block">
+        <p>Probíhá p?esouvání ?asových zázam?</p>
+        <div class="progress">
+          <div class="progress-bar bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            
+          </div>
+        </div>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+	<div class="container">
+		<iframe src="" style="zoom:0.60" width="99.6%" height="250" frameborder="0"></iframe>
+	</div>
+				
+
+</body>
+</html>
+ 

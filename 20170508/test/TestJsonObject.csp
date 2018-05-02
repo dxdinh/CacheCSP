@@ -1,0 +1,24 @@
+<script language="Cache"  runat="server">
+	// setup stream array
+	Set errorCode = 0, errorMessage = ""
+
+	
+	Set listObj = ##class(%ListOfDataTypes).%New()
+	set exceptionObj = ##class(QReport.Exception).%New()
+	set exceptionObj.AnalyteName = "AnalyteName"
+	set exceptionObj.InstrumentName = "InstrumentName"
+	set exceptionObj.Result = "3.3"
+	set exceptionObj.Consensus = "Yes"
+	set exceptionObj.NumLabs = "234"
+	set exceptionObj.Comparator = "Comparator"
+	set exceptionObj.Determination = "ConsensusStatus"
+	set exceptionObj.LateResults = 0
+	set exceptionObj.Amended = "Amended"
+	set exceptionObj.Unreportable = 2
+	
+ w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,exceptionObj,,,,"tw")
+ //w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,ListObj,,,,"twe")
+	
+</script>	
+
+

@@ -1,0 +1,76 @@
+<script language="cache" runat="server">
+	
+	Set reqType = $get(%request.Data("reqType",1))
+	
+	if (reqType = "isearch")
+	{
+		Set query = $get(%request.Data("q",1))
+
+		Do ..SelectInstrumentSearch(query)
+	}			
+	else
+	{
+		//Set sql = "select ID, Name, Code, programType from ngconfig.program where active = 1 and programType = 2  ORDER BY Name"
+		//Do ..SelectList(sql)
+		W "Invalid request"
+	}
+	
+	
+	
+</script>
+
+
+
+<script language="Cache" method="SelectInstrumentSearch" arguments="query:%String">	
+ 	
+//Set mSQL = "SELECT TOP 10 Instrument->Code, Name , Name || ' (' || Instrument->Code || ')' as label" _
+Set mSQL = "SELECT  TOP 100 Instrument->Code, tb1.Name " _
+		" FROM Codelist.InstrumentDescription tb1 WHERE LanguageKey = 'en' " _
+		" AND tb1.Instrument->Code not in  (select Instrument from CodeList.Instrument_Flag   where Flag = 'Y') " 
+	    
+Set condition = " AND (tb1.Name Like '%" _ query _ "%') " 
+
+If ($ISVALIDNUM(query))
+{
+	//Set condition = " AND tb1.Instrument->Code Like '" _ query _ "%'  " 
+}
+
+	Set mSQL = mSQL _ condition _ " ORDER BY Name "
+	//w mSQL 
+	//[{"id":"VN","label":"Vietnam"}]
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+  	  	
+  	Set listObj = ##class(%ListOfDataTypes).%New()  	
+  	
+  	if (status){
+		
+  		while (rs.Next()){	
+  			Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+  			Set id = $Get(rs.Data("Code"))
+  			Set label =  $Get(rs.Data("Name")) _ " (" _ id _ ")"
+  		  	Set proxyObj.id = id
+  		  	Set proxyObj.text = label
+  		  	Set tokenObj = ##class(%ListOfDataTypes).%New()  	
+  		  	//Set statusToken = tokenObj.Insert(id)
+  		  	//Set proxyObj.tokens = tokenObj
+
+			
+  		  	Set status = listObj.Insert(proxyObj)
+	  		Set i = i + 1
+  		}
+  	}
+	if (rowCount = 0)
+	{
+		
+		Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	  	Set status = listObj.Insert(proxyObj)
+  		
+	}
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,listObj,,,,"twe")		
+	//W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>

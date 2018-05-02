@@ -1,0 +1,458 @@
+
+<!-- bootstrap table -->
+<link href="plugins/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+<script src="plugins/bootstrap-table/bootstrap-table.js"></script>
+	
+<script src="plugins/bootbox/bootbox.min.4.4.0.js"></script>
+
+
+<style>
+.top-buffer { margin-top:20px; }
+</style>
+
+<div class="container-fluid">
+
+
+<div class="row">
+   <div class="col-md-2">
+  	<label for="ddlProgram">Program*</label>
+	<select id="ddlProgram" class="form-control">
+	</select>
+	</div>
+  <div class="col-md-2">
+  <label for="ddlAnalyte">Analyte</label>
+  	<select id="ddlAnalyte" class="form-control"></select>
+  </div>
+  <div class="col-md-2">
+  	<label for="ddlMethod">Method</label>
+  	<select id="ddlMethod" class="form-control formGroupInputSmall" ></select>
+  </div>
+  <div class="col-md-3">
+  	<label for="txtInstrument">Instrument</label>
+	<div id="">
+	  <input class="form-control typeahead" id="txtInstrument" type="text" placeholder="Select Instrument">
+	</div>  	
+  	
+  	
+  </div>
+  <div class="col-md-3">
+    <label for="txtReagent" >Reagent</label>
+  	<input class="form-control" id="txtReagent" placeholder="Select Reagent"> 
+  	
+	
+  </div>
+ </div>
+ <div class="row"> 
+   <div class="col-md-2 pull-right">
+  	<label for="ddlProgramExclude">ProgExclude</label>
+  	<!-- <select id="ddlProgramExclude" class="form-control"></select> -->
+	<div class="input-group"> 
+		<input class="form-control" id="txtProgramExclude" readonly> 
+		<div class="input-group-btn"> 
+			<button id="btnEditProgramExclude" type="button" class="btn btn-default" aria-label="Edit" onclick="btnEditProgramInclude_OnClick();" >
+				<span class="glyphicon glyphicon-pencil"></span>
+			</button> 
+			
+		</div> 
+	</div>  
+  <div class="col-md-2 pull-right">
+  	<label for="txtProgramInclude">ProgInclude</label>  	  	
+	<div class="input-group"> 
+		<input class="form-control" id="txtProgramInclude" readonly> 
+		<div class="input-group-btn"> 
+			<button id="btnEditProgramInclude" type="button" class="btn btn-default" aria-label="Edit" onclick="btnEditProgramInclude_OnClick();" >
+				<span class="glyphicon glyphicon-pencil"></span>
+			</button> 
+			
+		</div> 
+	</div>  	
+  </div>
+	
+
+
+
+  	
+  </div>
+  
+</div>
+
+
+
+</div> <!-- end of container-fluid -->
+<div class="container">
+<div class="row top-buffer">
+   <div class="col-lg-6 col-lg-offset-3 text-center">
+   		<label for="btnAdd">&nbsp;</label>
+		<button class="btn btn-primary" id="btnAdd" role="button" onclick="FillData();">Add</button>
+	</div>
+</div>
+</div>
+
+<div class="container">
+		<div style="padding: 10px; " id="resultTable">
+
+		    
+		    <table id="bsTable" 
+		    data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		    data-height="450" 		
+		    data-pagination="true" data-click-to-select="true"   
+		    data-url="">
+		        <thead>
+		            <tr>
+		             	
+		                <th data-field="Analyte" data-sortable="true">Analyte</th>
+		                <th data-field="Method" data-sortable="true" width="200">Method</th>
+		                <th data-field="Instrument" data-sortable="true" width="200">Instrument</th>
+		                <th data-field="Reagent" data-sortable="true" width="200">Reagent</th>
+		                <th data-field="ProgramInclude" data-sortable="true" width="200">Program Include</th>
+		                <th data-field="ProgramExclude" data-sortable="true" width="200">Program Exclude</th>
+		            </tr>
+		        </thead>
+		    </table>
+		          
+		    		    
+		</div>		
+</div>
+
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Program Include</h4>
+      </div>
+      <div class="modal-body">
+	
+		<div style="padding: 10px; " id="progInclusion">
+
+		    
+		    <table id="bsTableProgramInclusion" 
+		    data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		    data-height="250" 		
+		    data-pagination="true" data-click-to-select="true"   
+		    data-url="">
+		        <thead>
+		            <tr>		      
+		            	<th data-field="state" data-checkbox="true"></th>
+		                <th data-field="ID" data-sortable="true" width="200">Program ID</th>
+		                <th data-field="Name" data-sortable="true">Program</th>
+		                <th data-field="Code" data-sortable="true" width="200">Code</th>
+		                
+		            </tr>
+		        </thead>
+		    </table>
+		          
+		    		    
+		</div>		
+	
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>	
+
+<script type="text/javascript">
+
+$(document).ready(function () {	
+	Initialize ();
+	
+	
+});
+
+function FillData ()
+{
+	$("select#ddlProgram").val('12');
+	$("select#ddlAnalyte").val('39');
+}
+function btnEditProgramInclude_OnClick ()
+{
+	var analyte = $("select#ddlAnalyte").val();
+	if (analyte == "" || analyte == null)
+	{
+		bootbox.alert("Please select an analyte");
+		return;
+	}
+	$("#myModal").modal('show');
+	LoadTableProgramInclusion ();
+}
+    
+
+function BuildProgramInclusionList ()
+{
+	var $table = $("#bsTableProgramInclusion");
+
+	var programSelected = $table.bootstrapTable('getAllSelections');
+	var programList = $table.bootstrapTable('getData');
+	var selectedProg = "*";
+	if (programSelected.length != programList.length)
+	{
+		selectedProg = "";
+	    for (var i=0; i < programSelected.length ; i++)
+	    {
+	        selectedProg += programSelected[i].Code + ",";
+	    }	    
+	    selectedProg = selectedProg.slice(0,-1); //remove the last comma
+	}
+	$("#txtProgramInclude").val(selectedProg);	
+	
+
+}
+
+function LoadProgram()
+{
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'activeProgram'}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var progName = json.children[i].Name + " (" + json.children[i].Code + ")";  ;
+        	options += '<option value="' + json.children[i].ID + '">' + progName + '</option>';
+      }    
+     	$("select#ddlProgram").html(options);
+     	
+    
+	});		
+}
+function LoadAnalyte()
+{
+	var progID = $("#ddlProgram").val();
+	if (progID == "") ClearSelect ("ddlAnalyte");
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'progAnalyte', progID: progID}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var analyteDescription = json.children[i].Name + " (" + json.children[i].Analyte + ")";  ;
+        	options += '<option value="' + json.children[i].Analyte + '">' + analyteDescription + '</option>';
+      }    
+     	$("select#ddlAnalyte").html(options);
+     	
+     	
+     	
+    
+	});		
+}
+
+function LoadMethod()
+{
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") ClearSelect ("ddlMethod");
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'analyteMethod', analyteID: analyteID}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var methodDescription = json.children[i].methodName + " (" + json.children[i].methodCode + ")";  ;
+        	options += '<option value="' + json.children[i].methodCode + '">' + methodDescription + '</option>';
+      }    
+     	$("select#ddlMethod").html(options);
+     	
+    
+	});		
+}
+
+function LoadProgramInclude()
+{
+	
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") 
+	{
+		ClearSelect ("ddlMethod");
+		return;
+	}
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'includeProgram', analyteID: analyteID}, function (json) {	
+  		var options = '<option value="*">All</option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var progName = json.children[i].Name + " (" + json.children[i].Code + ", " + json.children[i].ID + ")";  ;
+        	options += '<option value="' + json.children[i].ID + '">' + progName + '</option>';
+      }    
+     	$("select#ddlProgramInclude").html(options);
+     	
+    
+	});		
+}
+
+function ClearSelect (selObj)
+{
+	$("select#" + selObj).html("");
+}
+
+function LoadTable(instrumentID, reagentID)
+{
+	var analyte = $("#ddlAnalyte").val();
+	var method = $("#ddlMethod").val();
+	
+	if (analyte == "" || analyte == null )
+	{
+		$("#txtInstrument").val('');
+		$("#txtReagent").val('');
+		bootbox.alert("Please select at least analyte" );				
+		return;
+	}
+	
+	//alert ( rptType + labNumber + lot + "-" + year+ month + "01" );
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: "infoAdd", analyteID: analyte, methodID: method
+						, instrumentID: instrumentID ,reagentID: reagentID})
+	.done (function (json) 
+	{
+		var tblData = json.children ;
+		
+	 	$('#bsTable').bootstrapTable({
+	        data: tblData        
+	        
+	    });
+	    
+	    
+	    $('#bsTable').bootstrapTable ('load', json.children	);
+	    
+		//$('#bsTable').bootstrapTable('hideLoading');
+		//HideShow ("resultTable", true);	
+		
+		
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});
+	
+	
+}
+
+function LoadTableProgramInclusion()
+{
+	
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") 
+	{
+		ClearSelect ("ddlMethod");
+		return;
+	}
+	
+	//alert ( rptType + labNumber + lot + "-" + year+ month + "01" );
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: 'includeProgram', analyteID: analyteID})
+	.done (function (json) 
+	{
+		var tblData = json.children ;
+		
+	 	$('#bsTableProgramInclusion').bootstrapTable({
+	        data: tblData        
+	        
+	    });
+	    
+	    
+	    $('#bsTableProgramInclusion').bootstrapTable ('load', json.children	);
+	    
+		//$('#bsTable').bootstrapTable('hideLoading');
+		//HideShow ("resultTable", true);	
+		
+		
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});
+	
+	
+}
+
+function Initialize () 
+{
+	LoadProgram();
+	
+	$("select#ddlProgram").change(function(){
+		LoadAnalyte ();
+		ClearSelect ("ddlAnalyte");
+		ClearSelect ("ddlMethod");
+		
+	});   
+	$("select#ddlAnalyte").change(function(){
+		
+		if ($("#ddlAnalyte").val() == "" || $("#ddlAnalyte").val()== null)
+		{
+			$
+			$("input").prop("disabled", true).val('');
+			return;
+		}
+		$("input").prop("disabled", false).val('');
+		LoadMethod ();
+		//LoadProgramInclude ();
+		LoadTable ('', '');
+	});   	
+	
+	$("select#ddlMethod").change(function(){
+
+		LoadTable ('', '');
+	});  
+ 	
+    
+    $('#bsTableProgramInclusion').on('all.bs.table', function (e, name, args) {        
+        BuildProgramInclusionList ();       
+        
+    })	
+    
+    InitializeSearch ();
+}
+function InitializeSearch ()
+{
+  var instruments = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label', 'id'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: 'json/instruments.json',
+  remote: {
+    url: 'json/GetJsonDataAPI.csp?reqType=isearch&query=%QUERY',
+    wildcard: '%QUERY'
+  	}
+ });
+ instruments.initialize();
+ 
+	$('#txtInstrument').typeahead(null, {
+	  name: 'list-instrument',
+	  minLength: 2,
+	  display: 'label',
+	  limit: 20,
+	  source: instruments
+	}).on('typeahead:selected', function (obj, datum) {
+	    //console.log("Object " + obj);
+	    //console.log("Data " + datum  + " ... ->" + datum.id);
+	    var instrumentID = datum.id;
+	    LoadTable (instrumentID, '');
+	    //console.log ('Calling load');
+	});
+ 
+  // Setup for Reagent Search 
+  var reagents = new Bloodhound({
+  datumTokenizer: Bloodhound.tokenizers.obj.whitespace('label', 'id'),
+  queryTokenizer: Bloodhound.tokenizers.whitespace,
+  prefetch: 'json/reagents.json',
+  remote: {
+    url: 'json/GetJsonDataAPI.csp?reqType=rsearch&query=%QUERY',
+    wildcard: '%QUERY'
+  	}
+ });
+ reagents.initialize(); 
+
+
+	$('#txtReagent').typeahead(null, {
+	  name: 'list-reagent',
+	  minLength: 2,
+	  display: 'label',
+	  limit: 20,
+	  source: reagents
+	}).on('typeahead:selected', function (obj, datum) {
+	    //console.log("Object " + obj);
+	    //console.log("Data " + datum  + " ... ->" + datum.id);
+	    var reagentID = datum.id;
+	    
+	});;	
+	
+	
+}
+
+</script>

@@ -1,0 +1,124 @@
+<html>
+<head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<title>Test email on Cache server</title>
+
+
+<script type="text/javascript" charset="utf-8">
+
+
+	function SendMail (stmpServer)
+	{
+		var toEmailAddress =  $("select#ddlEmail").val();
+		
+		if ($("#chkEmailText").is(':checked'))
+		{
+			toEmailAddress = $("#txtEmail").val();
+		}
+		
+		var msg = 'Sending to ' + toEmailAddress + ' using: ' + stmpServer;
+		//alert(msg);
+		
+		$('#result').html(msg);
+		
+		#server(..SendMail(stmpServer, toEmailAddress))#;
+		
+		
+	}
+</script>
+
+
+
+</head>
+
+<body>
+
+<form>
+  <label for="txtEmail">Email Address:</label>
+  <input id="txtEmail" type="text" length="250" value="">
+  <br/>
+  <br/>
+  <label for="ddlEmail">Email Address List:</label>
+  <select name="ddlEmail" id="ddlEmail" width="250px">
+  	<option value="dxdinh@gmail.com">dxdinh@gmail.com</option>
+  	<option value="dinh_dinh@bio-rad.com">dinh_dinh@bio-rad.com</option>
+  	<option value="dxdinh@yahoo.com">dxdinh@yahoo.com</option>
+  	<option value="anh_lam@bio-rad.com">anh_lam@bio-rad.com</option>
+  	<option value="fancyfatfish@yahoo.com">Anh@yahoo</option>
+  	<option value="nico_vandepoele@bio-rad.com">nico_vandepoele@bio-rad.com</option>
+  	<option value="nicovandepoele@hotmail.com">nicovandepoele@hotmail.com</option>
+  	
+  	
+  	
+  	
+  </select>
+
+	<br/>
+  	<br/>
+  	<label for="chkEmailText">Use email textbox:</label>
+  	<input id="chkEmailText" name="chkEmailText" type="checkbox">
+  	<br/>
+    <input type="button" name="action" value="Send Mail using smtp=localhost" onclick="SendMail('localhost')"/>
+  
+  	<br/>
+  	<br/>
+    <input type="button" name="action" value="Send Mail using smtp=smtp.bio-rad.com" onclick="SendMail('smtp.bio-rad.com')"/>
+  
+  	<br/>
+  	<br/>
+  	<div id="result">
+  	
+  	</div>
+  
+    	
+</form>
+
+</body>
+</html>
+
+<script language="Cache" method="SendMail" runat="server" arguments="smtpServer:%String, toEmailAddress:%String">
+
+	//&js< alert('#(smtpServer)#'  + ' ' +  '#(toEmailAddress)#'  );>
+	
+	Set smtp = ##class(%Net.SMTP).%New()
+	Set smtp.smtpserver=smtpServer
+
+	Set msgObj = ##class(%Net.MailMessage).%New()
+	set fromUser = "dinh_dinh@bio-rad.com"		//default sender
+	set server = $ZUTIL(110)
+		
+	set msgObj.From = "dinh_dinh@bio-rad.com"
+	
+	do msgObj.To.Insert(toEmailAddress)
+
+	Set emailMessage = "Testing email using " _ smtpServer
+	
+	set msgObj.Subject = "Testing email: (Server: "_ server _ ",  Namespace "_ $NameSpace _  ") Testing email"
+	set msgObj.Charset = "iso-8859-1"
+	set status = msgObj.TextData.Write(emailMessage)
+	
+	
+	if $$$ISERR(status) 
+	{
+		do $system.OBJ.DisplayError(status) 
+		&js< alert('error');>
+		quit
+	}
+	set status = smtp.Send(msgObj)
+
+
+	
+	if $$$ISERR(status)
+	{
+		&js< alert('error send mail');>
+		 do $system.OBJ.DisplayError(status)
+	}
+
+	
+	Set msg = "Sending to " _ toEmailAddress _ " using: " _ smtpServer		
+
+	&js< alert('done !!!!!!');>
+	Quit	
+</script>

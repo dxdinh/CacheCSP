@@ -1,0 +1,17 @@
+<script language="Cache"  runat="server">
+	set ErrorMessage = "", ErrorCode = 0
+	Set ACode = "",  MCode = "" , ICode = "" , RCode = "" 
+	Set JsonData = "", PCode = ""	
+					
+ 	set ACode = $get(%request.Data("Analyte",1))
+  	set MCode = $get(%request.Data("Method",1))
+ 	set ICode = $get(%request.Data("Instrument",1))
+  	set RCode = $get(%request.Data("Reagent",1))
+	set PageNo = $get(%request.Data("page",1))
+ 	set PageSize = $get(%request.Data("rows",1))
+
+	set Status = ##class(NGUtils.ValidTestConfig).JSONPagingLabResultConfig(PageNo, PageSize, ACode, MCode, ICode, RCode, .JsonData, .ErrorCode,.ErrorMessage)
+	
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,JsonData,,,,"twe")
+
+</script>

@@ -1,0 +1,41 @@
+<script language="Cache" method="SelectPersonalReportFileCheck" 
+	arguments="rptType:%String, labNumber:%String, lotNumber:%String, year:%String, month:%String">
+
+	Set mSQL = "SELECT LotNumber, FileName, ReportDate FROM dbo.UnityPersonalReports "
+	
+	Set fileName = rptType _ labNumber _  "%-" _ year _ month _ "01"
+	
+	Set whereClause = " WHERE  FileName LIKE '" _ fileName _ "'"
+	if (lotNumber '= "")
+	{
+		Set fileName = rptType _ labNumber _ lotNumber _ "-" _ year _ month _ "01"
+		Set whereClause = " WHERE FileName  = '" _ fileName _ "'"
+		
+	}
+	
+	Set mSQL = mSQL _  whereClause  _ " ORDER BY lotNumber "
+	//w mSQL, !
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+  	if (status){
+	  	w "["
+  		while (rs.Next()){	
+		  	if ( i > 0)
+		  	{
+			  	w " , "
+		  	}
+  		  	
+	  		W "{ ""LotNumber"": """ , $Get(rs.Data("LotNumber")) , """" 
+	  		W " ,""FileName"": """ , $Get(rs.Data("FileName")) , """" 
+	  		W "}"
+	  		Set i = i + 1
+  		}
+  		w "]"
+  		
+  	}
+	
+</script>

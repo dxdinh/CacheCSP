@@ -1,0 +1,236 @@
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+	@media screen and (min-width: 500px) , screen and (min-height: 400px){
+        .modal-dialog {
+          width: 700px; /* New width for default modal */
+          height: 400px;
+        }
+        .modal-sm {
+          width: 350px; /* New width for small modal */
+        }
+        .modal-content {
+  			min-height: 500px;
+  			overflow: scroll;
+		}
+    }
+      
+#AMIRGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}   
+
+.bigdrop {
+    width: 600px !important;
+}
+.select2-container {
+  width:100% !important;	
+}
+
+.ui-jqgrid .ui-jqgrid-title {
+    float: left;
+    margin: 8px;
+}
+.ui-jqgrid-view>.ui-jqgrid-titlebar {
+    height: 40px;
+    line-height: 24px;
+    color: #FFF;
+    background: #307ecc;
+    padding: 0;
+    font-size: 15px;
+}
+
+.ui-jqgrid .ui-jqgrid-pager {
+    line-height: 15px;
+    height: 45px;
+    padding-top: 3px!important;
+    padding-bottom: 5px!important;
+    background-color: #eff3f8!important;
+    border-bottom: 1px solid #E1E1E1!important;
+    border-top: 1px solid #E1E1E1!important;
+}
+
+</style>
+
+
+<!-- select2 -->
+<link href="plugins/select2/select2.min.css" rel="stylesheet" />
+<script src="plugins/select2/select2.full.4.0.3.min.js"></script>
+<script src="plugins/bootbox/bootbox.min.4.4.0.js"></script>
+</head>
+ <div style="margin-left:20px">
+    <table id="AMIRGrid" class="table table-sm"></table>
+    <div id="AMIRGridPager"></div>
+</div>
+
+</div><!-- container -->
+
+
+
+    <script type="text/javascript">
+    
+        $(document).ready(function () {	
+                
+            $("#AMIRGrid").jqGrid({
+                url: 'json/GetHistValidConfig.csp',
+                mtype: "GET",
+				styleUI : 'Bootstrap',
+                datatype: "json",
+                colModel: [
+                    { label: 'Analyte', name: 'Analyte', width: 50 , align:'center'},
+                    { label: 'Analyte Name', name: 'AnalyteName', width: 100 },
+                    { label: 'Method', name: 'Method', width: 40 , align:'center'},
+                    { label: 'Method Name', name: 'MethodName', width: 75 },
+                    { label:'Instrument', name: 'Instrument', width: 60 , align:'center'},
+                    { label:'Instrument Name', name: 'InstrumentName', width: 100 },
+                    { label:'Reagent', name: 'Reagent', width: 50 , align:'center'},
+                    { label:'Reagent Name', name: 'ReagentName', width: 100 },
+       				{ label:"Include",name:'ProgramInclude',  width:50, align:'center', sortable: false },
+        			{ label:"Exclude",name:'ProgramExclude',  width:50, align:'center', sortable: false },
+                    { label: 'Action', name: 'Action', width: 50 , align:'center'},
+        			{label:"Edit By",name:'EditBy',  width:50, align:'center', sortable: false },
+        			{label:"Edit On",name:'EditOn',  width:50, align:'center', sortable: false  }, 
+         			{label:" ",name: 'sbutton', width: 40, fixed: true, search: false, sortable: false}
+                ],
+				viewrecords: true,
+                height: 475,
+                rowNum: 10,
+   				rowList:[10,20,50],
+                pager: "#AMIRGridPager",
+  				caption: "View Valid Test Configuration Historical" ,
+            });
+			// activate the toolbar searching
+		jQuery("#AMIRGrid").jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, 
+													  beforeSearch:function(){return true;} });
+            
+  		$(".ui-search-toolbar th:last").find("div:first").html("<button id='BtnSearch' style='width:30px;height:30px' title='' class='glyphicon glyphicon-search'><\/button>").button({text: false, icons: {primary: "glyphicon glyphicon-search"}}).click(
+									function(e) { AMIRGridSearch(); }	); 	
+          
+           
+        $.jgrid.defaults.width = 1280;
+
+
+        });
+
+/**********************************************************************************/
+/**********************************************************************************/
+  function AMIRGridOnSelectRow()
+ {
+	$('#NoLabId').val('');
+	$('#NoResultId').val('');
+	
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow');    	
+	var AMIRrowData = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var analyte = AMIRrowData.Analyte;
+	var method = AMIRrowData.Method;
+	var instrument = AMIRrowData.Instrument;
+	var reagent = AMIRrowData.Reagent;
+    #server(..GetSelectedRowDetail( analyte, method, instrument, reagent))#;
+    
+}
+
+
+
+ /**********************************************************************************/
+/**********************************************************************************/
+ function AMIRGridSearch()
+ {
+	var index;
+	var aCode = "", mCode = "", iCode = "", rCode = "";
+	var aName = "", mName = "", iName = "", rName = "";
+	var action = "", editBy = "", editOn = "", pInclude = "", pExclude = ""
+	var filter = jQuery('#AMIRGrid').getGridParam("postData").filters;	
+	if (filter !== undefined)
+	{
+		var jsonFilter = JSON.parse(filter);	
+		var rules = jsonFilter.rules;
+
+		for (index  in rules) 
+		{
+		
+			switch(rules[index]['field'])
+			{
+				case 'Analyte':
+   					aCode = rules[index]['data'];
+   					break;
+				case 'AnalyteName':
+   					aName = rules[index]['data'];
+ 					break;
+				case 'Method':
+   					mCode = rules[index]['data'];
+   					break;
+				case 'MethodName':
+   					mName = rules[index]['data'];
+   					break;
+				case 'Instrument':
+   					iCode = rules[index]['data'];
+   					break;
+				case 'InstrumentName':
+   					iName = rules[index]['data'];
+   					break;
+				case 'Reagent':
+   					rCode = rules[index]['data'];
+   					break;
+				case 'ReagentName':
+   					rName = rules[index]['data'];
+				case 'Action':
+   					action = rules[index]['data'];
+   					break;
+				case 'EditBy':
+   					editBy = rules[index]['data'];
+	   				break;
+				case 'EditOn':
+   					editOn = rules[index]['data'];
+   					break;
+ 				case 'ProgramInclude':
+   					pInclude = rules[index]['data'];
+   					break;
+ 				case 'ProgramExclude':
+   					pExclude = rules[index]['data'];
+   					break;
+  				default:
+   					break;
+			}
+		}
+	}
+	//alert = "editBy = " + EditBy;
+	SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName,action,editBy,editOn, pInclude, pExclude);
+
+ }
+
+
+
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName,action,editBy,editOn, pInclude, pExclude)
+ {
+    var url = 'json/GetHistValidConfig.csp?';
+    if( aCode.length > 0) url = url + 'Analyte=' + aCode ;
+    if( mCode.length > 0) url = url + '&Method=' + mCode ;
+    if( iCode.length > 0) url = url + '&Instrument=' + iCode ;
+    if( rCode.length > 0) url = url + '&Reagent=' + rCode ;
+    if( aName.length > 0) url = url + '&AnalyteName=' + aName; 
+    if( mName.length > 0) url = url + '&MethodName=' + mName ;
+    if( iName.length > 0) url = url + '&InstrumentName=' + iName ;
+    if( rName.length > 0) url = url + '&ReagentName=' + rName; 
+    if( action.length > 0) url = url + '&Action=' + action; 
+    if( editBy.length > 0) url = url + '&EditBy=' + editBy; 
+    if( editOn.length > 0) url = url + '&EditOn=' + editOn; 
+    if( pInclude.length > 0) url = url + '&ProgramInclude=' + pInclude; 
+    if( pExclude.length > 0) url = url + '&ProgramExclude=' + pExclude; 
+	$("#AMIRGrid").jqGrid("clearGridData"); 		
+	$("#AMIRGrid").jqGrid('setGridParam', {url: url});
+	$('#AMIRGrid').trigger('reloadGrid');
+
+ }
+ 
+</script>
+
+
+
+
+
+		

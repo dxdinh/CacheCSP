@@ -1,0 +1,84 @@
+<html>
+<head>
+
+<!-- Put your page Title here https://www.sitepoint.com/introduction-jquery-deferred-objects/ -->
+<title>	jQuery Deferred method </title>
+<script type="text/javascript" src="https://select2.github.io/vendor/js/jquery.min.js"></script>
+
+<link href="https://select2.github.io/css/bootstrap.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="https://select2.github.io/vendor/js/bootstrap.min.js"></script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+  
+$(function () {
+
+	var username = 'testuser';
+	var fileToSearch = 'README.md';
+
+	$.getJSON('./json/reagents.json')
+	  .then(function(reagents) {
+		var reagentName = null;
+		for (var i = 0; i < reagents.length; i++) {
+			
+      		if (reagents[i].label.indexOf('10 mL vial (34)') >= 0) {
+        		reagentName = reagents[i].label;
+        		break;
+      		}
+    	}	
+    	return reagentName	  ;
+	    
+	  })
+	  .then(function(content) {
+	    console.log(content);
+	  });
+  
+    
+});
+	
+
+</script>
+</head>
+
+<body>
+
+
+	<div class="container">		 			
+		<div class="row">
+		<div class="col-xs-2">
+			<label for="ddlInstrument">Year</label>
+			<select id="ddlInstrument" class="js-data-example-ajax form-control input-sm" aria-describedby="basic-addon1">
+ 				<option value="3620194" selected="selected">select2/select2</option>
+			</select>			  				  				
+		</div>
+		</div> <!-- row -->
+	</div> <!-- container -->
+
+
+<p>
+
+
+<select class="js-example-basic-single">
+  <option value="AL">Alabama</option>
+  <option value="WY">Wyoming</option>
+</select>
+    
+    
+<select class="js-example-data-array"></select>   
+
+<select class="js-example-data-array-selected">
+  <option value="2" selected="selected">duplicate</option>
+</select> 
+  
+  
+  
+  </p>
+
+</body>
+</html>

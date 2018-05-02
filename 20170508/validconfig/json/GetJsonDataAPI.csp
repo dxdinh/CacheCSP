@@ -1,0 +1,372 @@
+<script language="cache" runat="server">
+	
+	Set reqType = $get(%request.Data("reqType",1))
+	
+	if (reqType = "activeProgram")
+	{
+		Do ..SelectActiveProgram()
+	}
+	elseif (reqType = "progAnalyte")
+	{
+		Set progID = $get(%request.Data("progID",1))
+		If (progID = "") w "Invalid program analyte  request"			
+		Do ..SelectProgramAnalyte(progID)
+	}
+	elseif (reqType = "includeProgram")
+	{
+		Set analyteID = $get(%request.Data("analyteID",1))
+		If (analyteID = "") w "Invalid analyte method request"		
+		Do ..SelectIncludeProgram(analyteID)
+	}	
+	elseif (reqType = "infoAdd")
+	{
+		Set analyteID = $get(%request.Data("analyteID",1))
+		If (analyteID = "") w "Invalid info table request"
+		Set methodID = $get(%request.Data("methodID",1))
+		Set instrumentID = $get(%request.Data("instrumentID",1))
+		Set reagentID = $get(%request.Data("reagentID",1))
+				
+		Do ..SelectConfigInfoTable(analyteID, methodID, instrumentID, reagentID)
+	}
+	elseif (reqType = "analyteMethod")
+	{
+		Set analyteID = $get(%request.Data("analyteID",1))
+		If (analyteID = "") w "Invalid analyte method request"		
+		Do ..SelectAnalyteMethod(analyteID)
+	}
+	elseif (reqType = "I")
+	{
+		Set sql = "SELECT Instrument->Code, Name " _
+				" FROM Codelist.InstrumentDescription WHERE LanguageKey = 'en' " _
+				" AND Instrument->Code not in  (select Instrument from CodeList.Instrument_Flag   where Flag = 'Y') " _
+			    " ORDER BY Name "
+		Do ..SelectList(sql)
+	}
+	elseif (reqType = "isearch")
+	{
+		Set query = $get(%request.Data("query",1))
+
+		Do ..SelectInstrumentSearch(query)
+	}	
+	elseif (reqType = "rsearch")
+	{
+		Set query = $get(%request.Data("query",1))
+
+		Do ..SelectReagentSearch(query)
+	}
+	elseif (reqType = "csearch")
+	{
+		Set query = $get(%request.Data("query",1))
+
+		Do ..SelectCommentSearch(query)
+	}	
+	elseif (reqType = "slideGen")		
+	{
+		Set instrumentID = $get(%request.Data("instrumentID",1))
+		Set sql = "select Flag from codelist.instrument_flag  where  flag = 'K' AND instrument = " _ instrumentID
+		Do ..SelectList(sql)
+	}
+	elseif (reqType = "R")
+	{
+		Set sql = "SELECT Reagent->Code, Name " _
+				" FROM Codelist.ReagentDescription WHERE LanguageKey = 'en' " _
+				" AND Reagent->Code not in  (select Reagent from CodeList.Reagent_Flag   where Flag = 'Y')" _
+				" ORDER BY Name "
+		Do ..SelectList(sql)
+	}	
+	elseif (reqType = "getComments")
+	{	
+		Set sqlSelect = "select ivc.id as IVCId, ivcd.invalidcomment as IVCDId, ivcd.languagekey, ivcd.description, ivcd.editby, ivcd.editon, ivcd.detail " _
+					  	" from ngconfig.invalidcomment ivc " _
+					  	" inner join ngconfig.invalidcommentdescription ivcd on (ivc.id = ivcd.invalidcomment) "
+		Set sqlWhere = ""					  	
+		Set sqlOrder = " order by ivcd.editon desc"
+					  
+		Set sString = $get(%request.Data("strSearch",1))
+		
+		If (sString = "")
+		{		
+			Set sql = sqlSelect _ sqlOrder
+		}
+		Else
+		{
+			If ($ISVALIDNUM(sString))
+			{
+				Set sqlWhere = " where ivc.id LIKE '" _ sString _ "%'"
+			}
+			Else
+			{
+				Set sqlWhere = " where ivcd.description LIKE '%" _ sString _ "%'"
+			}
+			
+			Set sql = sqlSelect _ sqlWhere _ sqlOrder
+		}				  
+		
+		Do ..GetComments(sql)				  
+	}	
+	elseif (reqType = "isFoundInValidConfig")
+	{
+		Set analyteID = $get(%request.Data("analyteID",1))		
+		Set methodID = $get(%request.Data("methodID",1))
+		Set instrumentID = $get(%request.Data("instrumentID",1))
+		Set reagentID = $get(%request.Data("reagentID",1))
+				
+		Do ..IsFoundInValidConfig(analyteID, methodID, instrumentID, reagentID)				
+	}
+	else
+	{
+		//Set sql = "select ID, Name, Code, programType from ngconfig.program where active = 1 and programType = 2  ORDER BY Name"
+		//Do ..SelectList(sql)
+		W "Invalid request"
+	}
+	
+	
+	
+</script>
+
+<script language="Cache" method="SelectActiveProgram" >	
+	
+	Set mSQL = "select ID, Name, Code, programType from ngconfig.program where active=1 AND programType NOT IN ('Qualitative Peer') AND programType NOT IN ('Qualitative PMA')ORDER BY Name"
+    //w mSQL	
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL) 
+				   		
+</script>
+
+<script language="Cache" method="SelectIncludeProgram" arguments="analyteID:%String">	
+ 	
+Set mSQL = "SELECT DISTINCT ProgCycle->Program->Name, ProgCycle->Program->Code ,  ProgCycle->Program->ID " _
+		   " FROM NGCONFIG.PROGRAMANALYTE " _
+		   " WHERE analyte = " _ analyteID _ 
+		   " AND ProgCycle->Program->Active =1 AND ProgCycle->Program->ProgramType NOT IN ('Qualitative Peer') AND ProgCycle->Program->ProgramType NOT IN ('Qualitative PMA')ORDER BY Name"
+
+	//w mSQL 
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="SelectConfigInfoTable" arguments="analyteID:%String, methodID:%String, instrumentID:%String, reagent:%String">	
+ 	
+Set mSQL = "SELECT * FROM NGConfig.ValidConfig WHERE analyte = " _ analyteID
+Set condition = ""
+If (methodID '= "") Set condition = condition _" AND method = " _ methodID
+If (instrumentID '="")  Set condition = condition _ " AND instrument = " _ instrumentID
+If (reagentID '="")  Set condition = condition _ " AND reagent = " _ reagentID
+
+Set mSQL = mSQL _ condition
+	//w mSQL 
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+<script language="Cache" method="SelectProgramAnalyte" arguments="progID:%String">	
+ 	
+Set mSQL = "SELECT ProgCycle->Cycle, tb1.Analyte, tb1.ProgCycle,  tb2.Name from ngconfig.programAnalyte tb1 " _
+ 			" JOIN Codelist.AnalyteDescription tb2 ON tb1.Analyte = tb2.Analyte AND tb2.LanguageKey = 'en' " _
+			" WHERE ProgCycle->Program = " _ progID _ 
+			" AND ProgCycle->Cycle in (SELECT MAX(Cycle->CycleNum)   FROM NGConfig.ProgCycle t2 WHERE t2.program = " _ progID _ ") " _
+			" ORDER BY tb2.Name"
+
+	//w mSQL 
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="SelectAnalyteMethod" arguments="analyteID:%String">	
+ 	
+Set mSQL = "SELECT Method->Code methodCode, Name methodName" _
+			" FROM Codelist.MethodDescription " _
+			" where LanguageKey = 'en' " _
+			" and Method->Code in (Select Method from Codelist.ValidMethod where Analyte = " _ analyteID _ ") " _
+			" AND Method->Code not in  (select Method from CodeList.Method_Flag   where Flag = 'Y') " _
+			" ORDER BY Name "
+
+	//w mSQL 
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+
+<script language="Cache" method="SelectInstrumentSearch" arguments="query:%String">	
+ 	
+Set mSQL = "SELECT Instrument->Code, Name " _
+		" FROM Codelist.InstrumentDescription tb1 WHERE LanguageKey = 'en' " _
+		" AND tb1.Instrument->Code not in  (select Instrument from CodeList.Instrument_Flag   where Flag = 'Y') " 
+	    
+Set condition = " AND (tb1.Name Like '%" _ query _ "%') " 
+
+If ($ISVALIDNUM(query))
+{
+	Set condition = " AND tb1.Instrument->Code Like '" _ query _ "%'  " 
+}
+
+	Set mSQL = mSQL _ condition _ " ORDER BY Name "
+	//w mSQL 
+	//[{"id":"1479","label":"Roche cobas 4000 (1479)"}]
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+  	  	
+  	Set listObj = ##class(%ListOfDataTypes).%New()  	
+  	if (status){
+		
+  		while (rs.Next()){	
+  			Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+  			Set id = $Get(rs.Data("Code"))
+  			Set label =  $Get(rs.Data("Name")) _ " (" _ id _ ")"
+  		  	Set proxyObj.id = id
+  		  	Set proxyObj.text = label
+
+			
+  		  	Set status = listObj.Insert(proxyObj)
+	  		Set i = i + 1
+  		}
+  	}
+	if (rowCount = 0)
+	{
+		
+		Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	  	Set status = listObj.Insert(proxyObj)
+  		
+	}
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,listObj,,,,"twe")		
+	//W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="SelectReagentSearch" arguments="query:%String">	
+ 	
+Set mSQL = "SELECT Reagent->Code, Name " _
+		" FROM Codelist.ReagentDescription tb1 WHERE LanguageKey = 'en' " _
+		" AND Reagent->Code not in  (select Reagent from CodeList.Reagent_Flag   where Flag = 'Y') " 
+	    
+Set condition = "AND (tb1.Name NOT Like 'Slide Gen%') AND (tb1.Name Like '%" _ query _ "%') " 
+
+If ($ISVALIDNUM(query))
+{
+	Set condition = " AND tb1.Reagent->Code Like '" _ query _ "%'  " 
+}
+
+	Set mSQL = mSQL _ condition _ " ORDER BY Name "
+	//w mSQL 
+	
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+  	  	
+  	Set listObj = ##class(%ListOfDataTypes).%New()  	
+  	if (status){
+		
+  		while (rs.Next()){	
+  			Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+  			Set id = $Get(rs.Data("Code"))
+  			Set label =  $Get(rs.Data("Name")) _ " (" _ id _ ")"
+  		  	Set proxyObj.id = id
+  		  	Set proxyObj.text = label
+
+			
+  		  	Set status = listObj.Insert(proxyObj)
+	  		Set i = i + 1
+  		}
+  	}
+	if (rowCount = 0)
+	{
+		
+		Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	  	Set status = listObj.Insert(proxyObj)
+  		
+	}
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,listObj,,,,"twe")		
+	//W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+<script language="Cache" method="SelectCommentSearch" arguments="query:%String">	
+ 	
+Set mSQL = "SELECT InvalidComment, Description " _
+		" FROM NGConfig.InvalidCommentDescription tb1 WHERE LanguageKey = 'en' " 
+
+Set condition = " AND Description Like '%" _ query _ "%'" 
+
+If ($ISVALIDNUM(query))
+{
+	Set condition = " AND tb1.InvalidComment Like '" _ query _ "%'  " 
+}
+
+Set mSQL = mSQL _ condition
+	//w mSQL 
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+  	  	
+  	Set listObj = ##class(%ListOfDataTypes).%New()  	
+  	if (status){
+		
+  		while (rs.Next()){	
+  			Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+  			Set invalidCommentID = $Get(rs.Data("InValidComment"))
+  			Set label =  $Get(rs.Data("Description")) 
+  		  	Set proxyObj.id = invalidCommentID
+  		  	Set proxyObj.text = label
+
+			
+  		  	Set status = listObj.Insert(proxyObj)
+	  		Set i = i + 1
+  		}
+  	}
+	if (rowCount = 0)
+	{
+		
+		Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	  	Set status = listObj.Insert(proxyObj)
+  		
+	}
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,listObj,,,,"twe")		
+	//W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="SelectList" arguments="sql:%String">	
+ 	
+	Set mSQL = sql
+	
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="GetComments" arguments="sql:%String">	
+	Set mSQL = sql
+	
+	W ##class(%ZEN.Auxiliary.jsonSQLProvider).%WriteJSONFromSQL(, mSQL, "tw", 0) 			   		
+</script>
+
+<script language="Cache" method="IsFoundInValidConfig" arguments="analyteID:%String, methodID:%String, instrumentID:%String, reagentID:%String">		
+//http://usirvlxd02/csp/ngeqas/validconfig/json/GetJsonDataAPI.csp?reqType=isFoundInValidConfig&analyteID=396&methodID=63&instrumentID=1151&reagentID=1635 	
+Set mSQL = "Select tb1.*, tb2.Description from ngconfig.invalidconfig tb1 " _
+	" JOIN ngconfig.InvalidCommentDescription tb2 ON tb1.Comment = tb2.InValidComment and languageKey = 'en'" _
+	" WHERE Analyte = " _ analyteID _ " AND Method = " _ methodID _ 
+					  " AND Instrument = " _ instrumentID _ " AND Reagent = " _ reagentID 
+
+	//w mSQL 
+	
+	Set rs = ##class(%Library.ScrollableResultSet).%New() 			  
+  	Set status = rs.Prepare(mSQL)  	  	
+  	Set status = rs.Execute()    	  	
+  	Set rowCount = rs.Count()
+  	Set i = 0
+
+	Set proxyObj = ##class(%ZEN.proxyObject).%New()	
+	Set proxyObj.found = "false"
+	If (rowCount>0)	  	  	
+	{		
+		while (rs.Next())		
+		{
+	  		Set proxyObj.found = "true"
+	  		Set proxyObj.reason = "Invalid: " _ $Get(rs.Data("Reason"))  _ " *** Comment: " _$Get(rs.Data("Description")) 
+	  		Set proxyObj.editBy = $Get(rs.Data("EditBy")) 
+	  		Set proxyObj.editOn = $Get(rs.Data("EditOn")) 
+		}
+  	}
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,proxyObj,,,,"twe")		
+	
+</script>
+
+

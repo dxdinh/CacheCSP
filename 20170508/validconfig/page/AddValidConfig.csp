@@ -1,0 +1,785 @@
+
+<!-- bootstrap table -->
+<link href="plugins/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+<script src="plugins/bootstrap-table/bootstrap-table.js"></script>
+	
+<script src="plugins/bootbox/bootbox.min.4.4.0.js"></script>
+<!-- select2 -->
+<link href="plugins/select2/select2.min.css" rel="stylesheet" />
+<script src="plugins/select2/select2.full.4.0.3.min.js"></script>
+
+<style>
+.top-buffer { margin-top:20px; }
+</style>
+
+<div class="container-fluid">
+
+<form id="addForm" role="form" data-toggle="validator">
+<div class="row">
+   <div class="col-md-2 form-group">
+  	<label for="ddlProgram">Program</label>
+	<select id="ddlProgram" class="form-control">
+	</select>
+	</div>
+  <div class="col-md-2">
+  <label for="ddlAnalyte" class="control-label">Analyte</label>
+  	<select id="ddlAnalyte" class="form-control" required></select>
+  </div>
+  <div class="col-md-2">
+  	<label for="ddlMethod">Method</label>
+  	<select id="ddlMethod" class="form-control formGroupInputSmall" required ></select>
+  </div>
+  <div class="col-md-3">
+	<label for="ddlInstrument">Instrument</label>
+	<select id="ddlInstrument" class="form-control input-sm" aria-describedby="basic-addon1">
+		<option value="" selected="selected" required></option>
+	</select>			  				  					  	  	
+  </div>
+  <div class="col-md-3">
+	<label for="ddlReagent">Reagent</label>
+	<select id="ddlReagent" class="form-control input-sm" aria-describedby="basic-addon1">
+		<option value="" selected="selected" required></option>
+	</select>			  				  					  	  	
+  	
+	
+  </div>
+ </div>
+ <div class="row"> 
+ 
+    <div class="col-md-2 pull-right">
+  	<label for="ddlProgramExclude">Program Exclude</label>
+  	<!-- <select id="ddlProgramExclude" class="form-control"></select> -->
+	<div class="input-group"> 
+		<input class="form-control" id="txtProgramExclude" readonly> 
+		<div class="input-group-btn"> 
+			<button id="btnEditProgramExclude" type="button" class="btn btn-default" aria-label="Edit" onclick="btnEditProgramExclude_OnClick();" >
+				<span class="glyphicon glyphicon-pencil"></span>
+			</button> 
+			
+		</div> 
+	</div> 	
+
+  	</div>
+ 
+  <div class="col-md-2 pull-right">
+  	<label for="txtProgramInclude">Program Include</label>  	  	
+	<div class="input-group"> 
+		<input class="form-control" id="txtProgramInclude" readonly value="*"> 
+		<div class="input-group-btn"> 
+			<button id="btnEditProgramInclude" type="button" class="btn btn-default" aria-label="Edit" onclick="btnEditProgramInclude_OnClick();" >
+				<span class="glyphicon glyphicon-pencil"></span>
+			</button> 
+			
+		</div> 
+	</div>  	
+  </div>
+
+
+
+  	
+
+  
+</div>
+
+</form>
+
+</div> <!-- end of container-fluid -->
+<div class="container">
+<div class="row top-buffer">
+   <div class="col-lg-6 col-lg-offset-3 text-center">
+   		<label for="btnAdd">&nbsp;</label>
+		<button class="btn btn-primary" id="btnAdd" role="button" onclick="AddValidConfig();">Add</button>
+	</div>
+</div>
+</div>
+
+<div class="container">
+		<img src="../images/sloading.gif" id="loading-indicator" style="display:none" />
+		<div style="padding: 10px; " id="resultTable">
+
+		    
+		    <table id="bsTable" 
+		    data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		    data-height="450" 		
+		    data-pagination="true" data-click-to-select="true"   
+		    data-url="">
+		        <thead>
+		            <tr>
+		             	
+		                <th data-field="Analyte" data-sortable="true">Analyte</th>
+		                <th data-field="Method" data-sortable="true" width="200">Method</th>
+		                <th data-field="Instrument" data-sortable="true" width="200">Instrument</th>
+		                <th data-field="Reagent" data-sortable="true" width="200">Reagent</th>
+		                <th data-field="ProgramInclude" data-sortable="true" width="200">Program Include</th>
+		                <th data-field="ProgramExclude" data-sortable="true" width="200">Program Exclude</th>
+		            </tr>
+		        </thead>
+		    </table>
+		          
+		    		    
+		</div>		
+</div>
+
+<div id="progIncludeModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Program Include</h4>
+      </div>
+      <div class="modal-body">	
+
+      
+		<div style="padding: 10px; " id="progInclusion">
+      <div class="">
+        <button type="button" class="btn btn-default" data-dismiss="modal" onclick="SelectAllProgram();">
+        Select all program (*)</button>
+      </div>		
+		    <table id="bsTableProgramInclusion" 
+		    data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		    data-height="250" 		
+		    data-pagination="true" 
+		    data-click-to-select="true"   
+		    data-checkbox-header="false"
+		    data-url="">
+		        <thead>
+		            <tr>		      
+		            	<th data-field="state" data-checkbox="true"></th>
+		                <th data-field="ID" data-sortable="true" width="200">Program ID</th>
+		                <th data-field="Name" data-sortable="true">Program</th>
+		                <th data-field="Code" data-sortable="true" width="200">Code</th>
+		                
+		            </tr>
+		        </thead>
+		    </table>		          		    		    
+		</div>		<!-- end modal-body -->        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>	<!-- progIncludeModal -->
+
+<div id="progExcludeModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Program Exclude</h4>
+      </div>
+      <div class="modal-body">	
+		<div style="padding: 10px; " id="progExclusion">
+		    <table id="bsTableProgramExclusion" 
+		    data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		    data-height="250" 		
+		    data-pagination="true" 
+		    data-click-to-select="true"   
+		    data-checkbox-header="false"
+		    data-url="">
+		        <thead>
+		            <tr>		      
+		            	<th data-field="state" data-checkbox="true"></th>
+		                <th data-field="ID" data-sortable="true" width="200">Program ID</th>
+		                <th data-field="Name" data-sortable="true">Program</th>
+		                <th data-field="Code" data-sortable="true" width="200">Code</th>
+		                
+		            </tr>
+		        </thead>
+		    </table>		          		    		    
+		</div>		<!-- end modal-body -->        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>	<!-- progIncludeModal -->
+
+<script type="text/javascript">
+
+$(document).ready(function () {	
+	Initialize ();
+	
+	
+});
+function SelectAllProgram ()
+{
+	$('#bsTableProgramInclusion').bootstrapTable('checkAll'); 
+	$("#txtProgramInclude").val("*");	
+	$("#txtProgramExclude").val("");	
+}
+
+function btnEditProgramInclude_OnClick ()
+{
+	$("#txtProgramExclude").val("");	
+	var analyte = $("select#ddlAnalyte").val();
+	if (!analyte)
+	{
+		bootbox.alert("Please select an analyte");
+		return;
+	}
+	$("#progIncludeModal").modal('show');
+	$("#txtProgramInclude").val('*');	
+	LoadTableProgramInclusion ();
+}
+
+function btnEditProgramExclude_OnClick ()
+{
+	var analyte = $("select#ddlAnalyte").val();
+	if (!analyte)
+	{
+		bootbox.alert("Please select an analyte");
+		return;
+	}
+	$("#progExcludeModal").modal('show');
+	LoadTableProgramExclusion ();
+}
+    
+
+function BuildProgramInclusionList ()
+{
+	var $table = $("#bsTableProgramInclusion");
+
+	var programSelected = $table.bootstrapTable('getAllSelections');
+	var programList = $table.bootstrapTable('getData');
+	var selectedProg = "*";
+
+	selectedProg = "";
+    for (var i=0; i < programSelected.length ; i++)
+    {
+        selectedProg += programSelected[i].Code + ",";
+    }	    
+    selectedProg = selectedProg.slice(0,-1); //remove the last comma
+	//if (programSelected.length == programList.length)
+	//{
+	//	bootbox.alert ("Use wild card '*' for all program or just this program inclusion list " + selectedProg );
+	//}
+	$("#txtProgramInclude").val(selectedProg);	
+	
+
+}
+
+function BuildProgramExclusionList ()
+{
+	$("#txtProgramInclude").val('');	
+	var $table = $("#bsTableProgramExclusion");
+
+	var programSelected = $table.bootstrapTable('getAllSelections');
+	var programList = $table.bootstrapTable('getData');
+	var selectedProg = "";
+	
+    for (var i=0; i < programSelected.length ; i++)
+    {
+        selectedProg += programSelected[i].Code + ",";
+    }	    
+    selectedProg = selectedProg.slice(0,-1); //remove the last comma
+	if (programSelected.length == programList.length)
+	{
+		bootbox.alert ("Invalid operation --- Cannot exclude all programs !!!" );
+		$table.bootstrapTable('uncheckAll');
+		selectedProg = "";
+	}
+	if (selectedProg == "") 
+	{
+		$("#txtProgramInclude").val('*');
+	}
+	$("#txtProgramExclude").val(selectedProg);	
+	
+
+}
+
+function LoadProgram()
+{
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'activeProgram'}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var progName = json.children[i].Name + " (" + json.children[i].Code + ")";  ;
+        	options += '<option value="' + json.children[i].ID + '">' + progName + '</option>';
+      }    
+     	$("select#ddlProgram").html(options);
+     	
+    
+	});		
+}
+function LoadAnalyte()
+{
+	var progID = $("#ddlProgram").val();
+	if (progID == "") ClearSelect ("ddlAnalyte");
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'progAnalyte', progID: progID}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var analyteDescription = json.children[i].Name + " (" + json.children[i].Analyte + ")";  ;
+        	options += '<option value="' + json.children[i].Analyte + '">' + analyteDescription + '</option>';
+      }    
+     	$("select#ddlAnalyte").html(options);
+     	
+     	
+     	
+    
+	});		
+}
+
+function LoadMethod()
+{
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") ClearSelect ("ddlMethod");
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'analyteMethod', analyteID: analyteID}, function (json) {
+
+  		var options = '<option value=""></option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var methodDescription = json.children[i].methodName + " (" + json.children[i].methodCode + ")";  ;
+        	options += '<option value="' + json.children[i].methodCode + '">' + methodDescription + '</option>';
+      }    
+     	$("select#ddlMethod").html(options);
+     	
+    
+	});		
+}
+
+function LoadProgramInclude()
+{
+	
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") 
+	{
+		ClearSelect ("ddlMethod");
+		return;
+	}
+	var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'includeProgram', analyteID: analyteID}, function (json) {	
+  		var options = '<option value="*">All</option>';
+		for (var i = 0; i < json.children.length; i++) {        
+        	var progName = json.children[i].Name + " (" + json.children[i].Code + ", " + json.children[i].ID + ")";  ;
+        	options += '<option value="' + json.children[i].ID + '">' + progName + '</option>';
+      }    
+     	$("select#ddlProgramInclude").html(options);
+     	
+    
+	});		
+}
+
+function ClearSelect (selObj)
+{
+	$("select#" + selObj).html("");
+}
+
+function LoadTable()
+{
+	var analyte = $("#ddlAnalyte").val();
+	var method = $("#ddlMethod").val();
+	var instrumentID = $("#ddlInstrument").val();
+	var reagentID = $("#ddlReagent").val();
+
+	if (!analyte)	
+	{
+		$("#ddlInstrument").prop("disabled", false).val('');
+		$("#ddlReagent").prop("disabled", false).val('');
+		//bootbox.alert("Please select at least analyte" );				
+		return;
+	}
+		
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: "infoAdd", analyteID: analyte, methodID: method
+						, instrumentID: instrumentID ,reagentID: reagentID})
+	.done (function (json) 
+	{
+		var tblData = json.children ;
+		
+	 	$('#bsTable').bootstrapTable({
+	        data: tblData        
+	        
+	    });
+	    	    
+	    $('#bsTable').bootstrapTable ('load', json.children	);
+	    		
+		
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});
+	
+	
+}
+
+function LoadTableProgramInclusion()
+{
+	
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") 
+	{
+		ClearSelect ("ddlMethod");
+		return;
+	}
+	
+	
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: 'includeProgram', analyteID: analyteID})
+	.done (function (json) 
+	{
+		var tblData = json.children ;	    
+	    $('#bsTableProgramInclusion').bootstrapTable ('load', json.children	);	    	
+	    $('#bsTableProgramInclusion').bootstrapTable('checkAll');    		
+						
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});
+	
+	
+}
+function LoadTableProgramExclusion()
+{
+	
+	var analyteID = $("#ddlAnalyte").val();
+	if (analyteID == "") 
+	{
+		ClearSelect ("ddlMethod");
+		return;
+	}
+	
+	
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: 'includeProgram', analyteID: analyteID})
+	.done (function (json) 
+	{
+		var tblData = json.children ;	    
+	    
+	    //$('#bsTableProgramInclusion').bootstrapTable('checkAll');    	
+	    
+		
+		if (tblData.length == 1)
+		{
+			bootbox.alert ('Exclusion is not allowed. There is only one program !!!!!!!!');  
+			$("#progExcludeModal").modal('hide');
+			return;
+			
+		}
+		$('#bsTableProgramExclusion').bootstrapTable ('load', json.children	);	    	
+						
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});
+	
+	
+}
+function Initialize () 
+{
+	LoadProgram();
+
+	$("#ddlInstrument").prop("disabled", true).val('');
+	$("#ddlReagent").prop("disabled", true).val('');
+	
+	$("select#ddlProgram").change(function(){
+		LoadAnalyte ();
+		ClearSelect ("ddlAnalyte");
+		ClearSelect ("ddlMethod");
+		$("#ddlInstrument").val(null).trigger("change");
+		$("#ddlReagent").val(null).trigger("change");		
+		//LoadTable();	
+		
+	});   
+	$("select#ddlAnalyte").change(function(){
+		
+		$("#ddlInstrument").prop("disabled", false).val('');
+		$("#ddlReagent").prop("disabled", false).val('');
+		if (!$("#ddlAnalyte").val())
+		{
+			
+			$("#ddlInstrument").prop("disabled", true).val('');
+			$("#ddlReagent").prop("disabled", true).val('');
+			return;
+		}
+		
+		LoadMethod ();
+		//LoadProgramInclude ();
+		LoadTable ();
+	});   	
+	
+	$("select#ddlMethod").change(function(){
+
+		LoadTable ();
+	});  
+ 	
+    
+    $('#bsTableProgramInclusion').on('check-all.bs.table', function (e, name, args) {        
+        //BuildProgramInclusionList ();       
+        //bootbox.alert ('You want wildcard');
+        
+    });	
+    $('#bsTableProgramInclusion').on('check.bs.table', function (e, name, args) {        
+        BuildProgramInclusionList ();       
+        
+    }).on('uncheck.bs.table', function (e, name, args) {        
+        BuildProgramInclusionList ();       
+        
+    });
+    
+    $('#bsTableProgramExclusion').on('check.bs.table', function (e, name, args) {        
+        BuildProgramExclusionList ();       
+        
+    }).on('uncheck.bs.table', function (e, name, args) {        
+        BuildProgramExclusionList ();       
+        
+    });
+    
+    
+    InitializeInstrumentSearch ();
+    InitializeReagentSearch ();
+}
+
+function InitializeInstrumentSearch ()
+{
+	$('#ddlInstrument').select2({
+	  ajax: {
+	    url: 'json/GetJsonDataAPI.csp?reqType=isearch',
+	    dataType: 'json',
+	    delay: 250,
+	    data: function (params) {
+		    return {
+			    query: params.term // search term
+		    };
+	    },
+	    processResults: function (data) {
+		   // parse the result into the format functions we do not need to alter the remote JSON data
+	      return {
+		      results: data
+	      };
+	    },	    
+	  },
+	  minimumInputLength : 2
+	  
+	}).on ("change", function (e) {
+		ReagentSlideGenCheck ();
+		LoadTable ();	
+		
+	});	
+	
+}
+function InitializeReagentSearch ()
+{
+$('#ddlReagent').select2({
+	  ajax: {
+	    url: 'json/GetJsonDataAPI.csp?reqType=rsearch',
+	    dataType: 'json',
+	    delay: 250,
+	    data: function (params) {
+		    return {
+			    query: params.term // search term
+		    };
+	    },
+	    processResults: function (data) {
+		   // parse the result into the format functions we do not need to alter the remote JSON data
+	      return {
+		      results: data
+	      };
+	    },	    
+	  },
+	  minimumInputLength : 2
+	  
+	}).on ("change", function (e) {
+		LoadTable ();	
+		
+	});		
+}
+
+function ReagentSlideGenCheck ()
+{
+	ClearSelect ('ddlReagent');
+	
+	var instrument = $("#ddlInstrument").val();
+	if (!instrument) return;
+	
+var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: 'slideGen', instrumentID: instrument})
+	.done (function (json) 
+	{
+		var data = json.children ;	    
+	    
+		if ( data.length > 0  )
+		{
+			var flag = data[0].Flag;
+			//bootbox.alert ("using slide gen " + data[0].Flag);
+			
+			// set default to slide gen 1000
+  			var options = '<option value="1000">Slide generation #00</option>';
+     		$("select#ddlReagent").html(options);			
+     		$('#ddlReagent').select2({ data: [ { id: 1000, text: 'Slide generation #00'} ]}).trigger('change');
+			return;	
+		}
+		InitializeReagentSearch ();
+		
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    //console.log( "Request Failed: " + err );
+	    bootbox.alert("Request Failed: " + err);
+	});	
+	
+}
+function AddValidConfig ()
+{
+	var analyte = $("#ddlAnalyte").val();
+	var method = $("#ddlMethod").val();
+	var instrument = $("#ddlInstrument").val();
+	var reagent = $("#ddlReagent").val();
+	var progInclude = $("#txtProgramInclude").val();	
+	var progExclude = $("#txtProgramExclude").val();	
+	
+	if (!analyte || !method || !instrument || !reagent)
+	{
+		bootbox.alert ('Unable to add -- Incomplete valid config parameter !!!!!!');
+		return;
+	}
+	if (!progInclude && !progExclude)
+	{
+		progInclude = "*"
+		$("#txtProgramInclude").val('*');
+	}
+	//var rptTypes = $.getJSON( "./json/GetJsonDataAPI.csp",{reqType: 'activeProgram'}, function (json) {
+		
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: "isFoundInValidConfig", analyteID: analyte, methodID: method
+						, instrumentID: instrument ,reagentID: reagent})
+	  .then(function(data) {
+		var found = false;  		
+		var detail = "";
+		if (data.found == "true")
+		{			
+			found = true;
+			detail = "Edit by: " + data.editBy + " <br> EditOn: " + data.editOn + "<br> Reason: " + data.reason
+						
+		}
+		AddConfirmation (found, detail,  analyte, method, instrument, reagent, progInclude, progExclude);	
+		return found;
+	    
+	  })
+	  .then(function(found) { 
+	  	//console.log ("Found: " + found );
+	  });
+	
+	
+	//#call(..AddNewValidConfig( analyte, method, instrument, reagent, progInclude, progExclude))#;
+	
+	//var response = #server(..PopulateValidConfigByMethodGuide())#;	    		           
+}
+function AddConfirmation (found, detail, analyte, method, instrument, reagent, progInclude, progExclude)
+{
+	var msg = GetAddConfigDetail () ;
+	if (found)
+	{		
+		msg += "<br> <div class='alert alert-danger' role='alert'>This configuration exists in InvalidConfig table. Adding this will remove it from InvalidConfig table.";
+		msg += "<br>" + detail + "</div>";
+		
+	}
+	bootbox.confirm({
+    title: "Add new configuration",
+    message: "Are you sure you want to add the following valid configuration? " + msg,
+    buttons: {
+        cancel: {
+            label: '<i class="fa fa-times"></i> Cancel',
+            className: 'btn-danger'
+        },
+        confirm: {
+            label: '<i class="fa fa-check"></i> Confirm',
+            className: 'btn-success'
+        }
+    },
+    callback: function (result) {
+        //console.log('This was logged in the callback: ' + result);
+        if (result)
+        {
+        	#call(..AddNewValidConfig( analyte, method, instrument, reagent, progInclude, progExclude))#
+        	LoadTable ();
+        }
+    }
+});
+	
+}
+
+function GetAddConfigDetail ()
+{
+	var analyteName = $("#ddlAnalyte :selected").text();
+	var methodName = $("#ddlMethod :selected").text();
+	var instrumentName = $("#ddlInstrument :selected").text();
+	var reagentName = $("#ddlReagent :selected").text();
+	
+	var s = "<li>Analyte: " +  analyteName  + "</li>";
+	s += "<li>Method: " + methodName   + "</li>";
+	s += "<li>Instrument: " +  instrumentName  + "</li>";
+	s += "<li>Reagent: " +  reagentName  + "</li>";
+	s += "<li>Program Include: " +  $("#txtProgramInclude").val()  + "</li>";
+	s += "<li>Program Exclude " +  $("#txtProgramExclude").val()  + "</li>";
+	
+	return s;
+}
+
+$(document).ajaxSend(function(event, request, settings) {
+    $('#loading-indicator').show();
+});
+
+$(document).ajaxComplete(function(event, request, settings) {
+    $('#loading-indicator').hide();
+});
+
+</script>
+
+
+<script language="Cache" runat="server" method="AddNewValidConfig" 
+	arguments="analyte:%String, method:%String, instrument:%String, reagent:%String, progInclude:%String, progExclude:%String" 
+	returntype="%String" runat="SERVER">			  
+	
+	set strOut = "", errorCode = 0 , errorMessage = ""	
+			  	
+    set countSaved = 0, totalCount = 0
+    Set editBy = " ", detail = "Add New ValidConfig"
+	Set editBy = %session.Data("USER_NAME")
+	Set detail = %session.Data("USER_IP") _ " -> Add New ValidConfig"
+	&sql(Select 1 from NGConfig.ValidConfig where Analyte->ID = :analyte
+	 and Method->ID = :method and Instrument->ID = :instrument and Reagent->ID = :reagent)	  
+		 
+	if ( (SQLCODE '= 0) && (SQLCODE '= 100))
+	{
+ 		set ErrorMessage = $SYSTEM.SQL.SQLCODE(SQLCODE)
+		&js<alert('#(ErrorMessage)#');>
+		quit 
+	}
+	if (SQLCODE = 100) // not found
+	{
+  			
+		set status = ##class(NGConfig.ValidConfig).Save(analyte, method, instrument, reagent, progInclude, progExclude, editBy, detail, .errorCode, .errorMessage)    		
+		if ('status)
+		{
+			Set outputMsg  = errorMessage
+			quit		
+		}
+		else
+		{			
+			Set outputMsg = " successfully saved "
+			&js< bootbox.alert("The new configuration successfully saved!!!!!"); >
+			&js< LoadTable(); >
+		}
+	}
+	else	
+	{
+		&js< bootbox.alert("The configuration already exists!!!!!"); >
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+</script>

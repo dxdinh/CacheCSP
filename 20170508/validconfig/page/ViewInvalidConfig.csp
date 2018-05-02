@@ -1,0 +1,254 @@
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+@media screen and (min-width: 500px) , screen and (min-height: 400px){
+        .modal-dialog {
+          width: 700px; /* New width for default modal */
+          height: 400px;
+        }
+        .modal-sm {
+          width: 350px; /* New width for small modal */
+        }
+        .modal-content {
+  			min-height: 500px;
+  			overflow: scroll;
+		}
+
+
+    }
+#CommentGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}    
+    
+#AMIRGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}    
+</style>
+</head>
+ <div style="margin-left:20px">
+    <table id="AMIRGrid" class="table table-sm"></table>
+    <div id="AMIRGridPager"></div>
+</div>
+ 	</form>
+		
+	<form id="frmExcel" action="" method="post" target="_blank">
+		
+	</form>
+
+</div><!-- container -->
+
+
+<!-- Modal -->
+<div id="CommentDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+       	<div><h4>Comment Detail</h4></div>
+     </div>
+      <div class="modal-body">
+     	<span id="CommentHeader"></span>
+      	<div style="margin-left:20px">
+    			<table id="CommentGrid" class="table table-sm" style="width:400px"></table>
+    			<div id="CommentGridPager"></div>
+    	</div>
+      </div>
+     
+    </div>
+  </div>
+</div>	
+
+				
+    <script type="text/javascript">
+    
+        $(document).ready(function () {	
+        
+            $("#AMIRGrid").jqGrid({
+                url: 'json/GetValidConfig.csp?ViewOption=1',
+                mtype: "GET",
+				styleUI : 'Bootstrap',
+                datatype: "json",
+                colModel: [
+                    { label: 'Analyte', name: 'Analyte', width: 50 , align:'center'},
+                    { label: 'AnalyteName', name: 'AnalyteName', width: 150 },
+                    { label: 'Method', name: 'Method', width: 50 , align:'center'},
+                    { label: 'MethodName', name: 'MethodName', width: 150 },
+                    { label:'Instrument', name: 'Instrument', width: 80 , align:'center'},
+                    { label:'Instrument Name', name: 'InstrumentName', width: 150 },
+                    { label:'Reagent', name: 'Reagent', width: 75 , align:'center'},
+                    { label:'Reagent Name', name: 'ReagentName', width: 150 },
+       				{label:"Reason",name:'Reason',  width:50, align:'left', search: false, sortable: false },
+        			{label:"Comment",name:'Comment',   width:50, align:'center', search: false,sortable: false,formatter: returnViewCommentLink  },
+         			{label:" ",name: 'sbutton', width: 40, fixed: true, search: false, sortable: false}
+                ],
+				viewrecords: true,
+                height: 515,
+                rowNum: 10,
+   				rowList:[10,20,50],
+               pager: "#AMIRGridPager"
+                
+            });
+			// activate the toolbar searching
+		jQuery("#AMIRGrid").jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, 
+													  beforeSearch:function(){return true;} });
+            
+  		$(".ui-search-toolbar th:last").find("div:first").html("<button id='BtnSearch' style='width:30px;height:30px' title='' class='glyphicon glyphicon-search'><\/button>").button({text: false, icons: {primary: "glyphicon glyphicon-search"}}).click(
+									function(e) { AMIRGridSearch(); }	); 	
+          
+           
+        $.jgrid.defaults.width = 1280;
+        });
+        
+ 
+/**********************************************************************************/
+/**********************************************************************************/
+  function AMIRGridOnSelectRow()
+ {
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow');    	
+	var AMIRrowData = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var analyte = AMIRrowData.Analyte;
+	var method = AMIRrowData.Method;
+	var instrument = AMIRrowData.Instrument;
+	var reagent = AMIRrowData.Reagent;
+    
+}
+
+ /**********************************************************************************/
+/**********************************************************************************/
+ function AMIRGridSearch()
+ {
+	var index;
+	var aCode = "", mCode = "", iCode = "", rCode = "";
+	var aName = "", mName = "", iName = "", rName = "";
+	
+	var filter = jQuery('#AMIRGrid').getGridParam("postData").filters;	
+	if (filter !== undefined)
+	{
+		var jsonFilter = JSON.parse(filter);	
+		var rules = jsonFilter.rules;
+
+		for (index  in rules) 
+		{
+		
+			switch(rules[index]['field'])
+			{
+				case 'Analyte':
+   					aCode = rules[index]['data'];
+   					break;
+				case 'AnalyteName':
+   					aName = rules[index]['data'];
+ 					break;
+				case 'Method':
+   					mCode = rules[index]['data'];
+   					break;
+				case 'MethodName':
+   					mName = rules[index]['data'];
+   					break;
+				case 'Instrument':
+   					iCode = rules[index]['data'];
+   					break;
+				case 'InstrumentName':
+   					iName = rules[index]['data'];
+   					break;
+				case 'Reagent':
+   					rCode = rules[index]['data'];
+   					break;
+				case 'ReagentName':
+   					rName = rules[index]['data'];
+   					break;
+   				default:
+   					break;
+			}
+		}
+	}
+	
+	SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName);
+
+ }
+
+
+
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName)
+ {
+    var url = 'json/GetValidConfig.csp?';
+    if( aCode.length > 0) url = url + 'Analyte=' + aCode ;
+    if( mCode.length > 0) url = url + '&Method=' + mCode ;
+    if( iCode.length > 0) url = url + '&Instrument=' + iCode ;
+    if( rCode.length > 0) url = url + '&Reagent=' + rCode ;
+    if( aName.length > 0) url = url + '&AnalyteName=' + aName; 
+    if( mName.length > 0) url = url + '&MethodName=' + mName ;
+    if( iName.length > 0) url = url + '&InstrumentName=' + iName ;
+    if( rName.length > 0) url = url + '&ReagentName=' + rName; 
+	url = url + '&ViewOption=1'; 
+	$("#AMIRGrid").jqGrid("clearGridData"); 		
+	$("#AMIRGrid").jqGrid('setGridParam', {url: url});
+	$('#AMIRGrid').trigger('reloadGrid');
+
+ }
+ 
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function ViewCommentDialog(commentId)
+ {
+	var info = "Comment ID: " + commentId;
+	$('#CommentHeader').html(info );
+
+    var url = 'json/GetComment.csp?CommentId=' + commentId ;
+
+  	$("#CommentGrid").jqGrid({
+   		url: url,
+        mtype: "GET",
+		styleUI : 'Bootstrap',
+        datatype: "json",
+        colModel: [
+                    { label:'Language Name', name: 'LanguageName', width: 20 },
+                    { label:'Language Code', name: 'LanguageKey', width: 20 },
+                    { label: 'Comment', name: 'Description', width: 50 }
+                ],
+				viewrecords: true,
+                width: 600,
+                height: 300,
+              	rowNum: 10,
+   				rowList:[10,20,50,100],
+                pager: "#CommentGridPager" ,
+                
+     });
+		
+	$('#CommentDialog').modal('show');
+
+	$("#CommentGrid").jqGrid("clearGridData"); 		
+	$("#CommentGrid").jqGrid('setGridParam', {url: url});
+	$('#CommentGrid').trigger('reloadGrid');
+}
+/**********************************************************************************/
+/**********************************************************************************/
+function returnViewCommentLink(cellValue, options, rowData, action) 
+{
+	var commentId = "";
+	if( (rowData != 'undefined') && (rowData != null))
+	{
+		commentId = rowData.Comment;
+	
+	}
+	//var parm = '"' + commentId + '"';
+    var url =  "<a class='pointer' href='#' onclick='ViewCommentDialog(" +  commentId  + ")' >" +
+    	   " <font color='blue'> " + cellValue + "</a>";
+	return url;
+	
+}
+
+</script>
+
+
+		

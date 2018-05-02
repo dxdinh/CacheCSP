@@ -1,0 +1,30 @@
+<script language="Cache"  runat="server">
+	set ErrorMessage = "", ErrorCode = 0
+	Set ACode = "", AName = "" , MCode = "" , MName = "" 
+	set ICode = "" , IName = "",RCode = "" , RName = ""
+	Set SortedBy = "" , JsonData = "", PCode = ""	
+	set RecordType = "", EditBy = "", EditOn = ""
+	set ProgramInclude = "", ProgramExclude = ""
+	set PageNo = 1, PageSize = 10, RowCount = 0
+	
+ 	set ACode = $get(%request.Data("Analyte",1))
+ 	set AName = $get(%request.Data("AnalyteName",1))
+ 	set MCode = $get(%request.Data("Method",1))
+ 	set MName = $get(%request.Data("MethodName",1))
+ 
+ 	set ICode = $get(%request.Data("Instrument",1))
+ 	set IName = $get(%request.Data("InstrumentName",1))
+ 	set RCode = $get(%request.Data("Reagent",1))
+ 	set RName = $get(%request.Data("ReagentName",1))
+ 
+ 	set RecordType = $get(%request.Data("Action",1))
+ 	set EditBy = $get(%request.Data("EditBy",1))
+ 	set EditOn = $get(%request.Data("EditOn",1))
+ 	set ProgramInclude = $get(%request.Data("ProgramInclude",1))
+ 	set ProgramExclude = $get(%request.Data("ProgramExclude",1))
+
+ 	set PageNo = $get(%request.Data("page",1))
+ 	set PageSize = $get(%request.Data("rows",1))
+	set Status = ##class(NGUtils.ValidTestConfig).JSONPagingHistValidTestConfig(PageNo, PageSize , ACode, AName,MCode, MName, ICode, IName, RCode, RName,RecordType, EditBy, EditOn,ProgramInclude,ProgramExclude,.JsonData, .ErrorCode,.ErrorMessage)
+	w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,JsonData,,,,"twe")
+</script>

@@ -1,0 +1,978 @@
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+	@media screen and (min-width: 500px) , screen and (min-height: 400px){
+        .modal-dialog {
+          width: 700px; /* New width for default modal */
+          height: 400px;
+        }
+        .modal-sm {
+          width: 350px; /* New width for small modal */
+        }
+        .modal-content {
+  			min-height: 500px;
+  			overflow: scroll;
+		}
+    }
+  
+        
+#LabEnrollGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}    
+#LabResultGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}    
+    
+#AMIRGrid >tbody>tr>td{
+  height:23px;
+  padding: 2px;
+  border-top: 1px;
+}   
+#tblInvalid >thead>tr>th{
+    vertical-align: middle !important;
+    text-align: center;	
+} 
+#tblInvalid >tbody>tr>td{
+    vertical-align: middle !important;
+    text-align: center;	
+} 
+
+.bigdrop {
+    width: 600px !important;
+}
+.select2-container {
+  width:100% !important;	
+}
+
+</style>
+<!-- select2 -->
+<link href="plugins/select2/select2.min.css" rel="stylesheet" />
+<script src="plugins/select2/select2.full.4.0.3.min.js"></script>
+<script src="plugins/bootbox/bootbox.min.4.4.0.js"></script>
+</head>
+ <div style="margin-left:20px">
+    <table id="AMIRGrid" class="table table-sm"></table>
+    <div id="AMIRGridPager"></div>
+</div>
+ 	</form>
+		
+	<form id="frmExcel" action="" method="post" target="_blank">
+		
+	</form>
+
+</div><!-- container -->
+
+
+<!-- Modal -->
+<div id="LabEnrollDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+       	<div><h4>Valid Lab Enroll Configuration</h4></div>
+     </div>
+      <div class="modal-body">
+     	<span id="LabEnrollHeader"></span>
+      	<div style="margin-left:20px">
+    			<table id="LabEnrollGrid" class="table table-sm" style="width:400px"></table>
+    			<div id="LabEnrollGridPager"></div>
+    	</div>
+      </div>
+      <div class="modal-footer">
+			<button type="button" class="btn btn-default"  id="LabEnrollExport" onclick="LabEnrollExcelOnClick()">Export To Excel</button> 
+		    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+      
+     
+    </div>
+  </div>
+</div>	
+
+<!-- Modal -->
+<div id="LabResultDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+       	<div><h4>Valid Lab Result Configuration</h4></div>
+     </div>
+      <div class="modal-body">
+     	<span id="LabResultHeader"></span>
+      	<div style="margin-left:20px">
+    			<table id="LabResultGrid" class="table table-sm" style="width:400px"></table>
+    			<div id="LabResultGridPager"></div>
+    	</div>
+      </div>
+      <div class="modal-footer">
+			<button type="button" class="btn btn-default"  id="LabResultExport"  onclick="LabResultExcelOnClick()">Export To Excel</button> 
+		    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>	
+
+
+
+<!-- Modal Delete ValidConfig Entr -->
+<div id="deleleDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+       	<div><h4>Reason for deletion</h4></div>
+     </div>
+      <div class="modal-body">
+	      <div id="testDesc" class="alert alert-info">
+	    	
+	  	  </div>
+		<div class="table-responsive">
+			<table id="tblInvalid" class="table table-bordered  table-condensed"> 
+				<thead><tr> 
+					<th></th>
+					<th>Analyte &nbsp;<br><span id="aCode" class="label label-default"></span></th> 
+					<th>Method<br><span id="mCode" class="label label-default"></span></th> 
+					<th>Intrument<br><span id="iCode" class="label label-default"></span></th> 
+					<th>Reagent<br><span id="rCode" class="label label-default"></span></th> 
+					</tr></thead> 
+				<tbody> 
+					<tr> 
+						<td>Invalid for:</td>
+						<td><input name="invalidType" type="checkbox" value="IA" ></td> 
+      					<td><input name="invalidType" type="checkbox" value="IM" ></td> 
+      					<td><input name="invalidType" type="checkbox" value="II"></td> 
+      					<td><input name="invalidType" type="checkbox" value="IR"></td> 
+      				</tr>		
+      			</tbody>
+      		</table>
+      		<label>Select for comment: </label>
+      		<select id="ddlComment" class="form-control" >
+				<option value="" selected="selected" required></option>
+			</select>
+		</div>
+
+  	</div>
+      <div class="modal-footer">
+		    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		    <button type="button" class="btn btn-danger"  id="btnDeleteInvalid" onclick="btnDeleteInvalid_OnClick(0)">Delete</button> 		    		    		    				  	
+		    <button type="button" class="btn btn-danger"  id="btnDeleteAllInvalid" onclick="btnDeleteInvalid_OnClick(1)" style="display:none">Delete All</button> 		    		    		    				  	
+      </div>     
+    </div>
+  </div>
+</div>	
+
+				
+
+    <script type="text/javascript">
+    
+        $(document).ready(function () {	
+        
+        	//$('#deleleDialog').modal('show');
+        
+            $("#AMIRGrid").jqGrid({
+                url: 'json/GetValidConfig.csp',
+                mtype: "GET",
+				styleUI : 'Bootstrap',
+                datatype: "json",
+                colModel: [
+                    { label: 'Analyte', name: 'Analyte', width: 50 , align:'center'},
+                    { label: 'AnalyteName', name: 'AnalyteName', width: 150 },
+                    { label: 'Method', name: 'Method', width: 50 , align:'center'},
+                    { label: 'MethodName', name: 'MethodName', width: 150 },
+                    { label:'Instrument', name: 'Instrument', width: 80 , align:'center'},
+                    { label:'Instrument Name', name: 'InstrumentName', width: 150 },
+                    { label:'Reagent', name: 'Reagent', width: 75 , align:'center'},
+                    { label:'Reagent Name', name: 'ReagentName', width: 150 },
+       				{label:"Include",name:'ProgramInclude',  width:50, align:'center', sortable: false },
+        			{label:"Exclude",name:'ProgramExclude',  width:50, align:'center', sortable: false },
+       				{label:"#Enroll",name:'NoLab',  width:50, align:'center', search: false,sortable: false,formatter: returnViewLabEnrollLink  },
+        			{label:"#Result",name:'NoResult',  width:75, align:'center', search: false,sortable: false,formatter: returnViewLabResultLink },
+         			{label:" ",name: 'sbutton', width: 40, fixed: true, search: false, sortable: false}
+                ],
+				viewrecords: true,
+                height: 515,
+                rowNum: 10,
+   				rowList:[10,20,50],
+               pager: "#AMIRGridPager"
+                
+            });
+			// activate the toolbar searching
+		jQuery("#AMIRGrid").jqGrid('filterToolbar', { stringResult: true, searchOnEnter: false, 
+													  beforeSearch:function(){return true;} });
+            
+  		$(".ui-search-toolbar th:last").find("div:first").html("<button id='BtnSearch' style='width:30px;height:30px' title='' class='glyphicon glyphicon-search'><\/button>").button({text: false, icons: {primary: "glyphicon glyphicon-search"}}).click(
+									function(e) { AMIRGridSearch(); }	); 	
+          
+           
+        $.jgrid.defaults.width = 1280;
+
+ 		$("#AMIRGrid").navGrid('#AMIRGridPager', {edit:false, add:false, del:false, search:false,refresh:false});
+  		$("#AMIRGrid").navButtonAdd('#AMIRGridPager',{caption:"Delete Test",
+  		                    buttonicon:"glyphicon glyphicon-trash", 
+  		                    position:"last", id:"BtnDeleteTest",onClickButton:function() {AMIRGridOnDeleteRow()}});
+  		$("#AMIRGrid").navButtonAdd('#AMIRGridPager',{caption:"Delete All Test",
+  		                    buttonicon:"glyphicon glyphicon-trash", 
+  		                    position:"last", id:"BtnDeleteAllTest",onClickButton:function() {AMIRGridOnDeleteAllRow()}});
+  		                    
+  		                    
+		InitializeCommentSearch();
+		
+        });
+        
+/**********************************************************************************/
+/**********************************************************************************/
+  function AMIRGridOnDeleteRow()
+ {
+	$('#btnDeleteInvalid').show();	 
+	$('#btnDeleteAllInvalid').hide();	 
+	 
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow'); 
+	if( (rowId == 'undefined') || (rowId == null))
+	{
+		//alert("Please select a row to delete");
+		bootbox.alert ("Please select a row to delete");
+		return;
+	}
+ 
+	var selectedRow = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var aCode = selectedRow.Analyte;
+	var mCode = selectedRow.Method;
+	var iCode = selectedRow.Instrument;
+	var rCode = selectedRow.Reagent;
+	var aName = selectedRow.AnalyteName;
+	var mName = selectedRow.MethodName;
+	var iName = selectedRow.InstrumentName;
+	var rName= selectedRow.ReagentName;	
+	
+	
+	$("#aCode").html(aCode);
+	$("#mCode").html(mCode);
+	$("#iCode").html(iCode);
+	$("#rCode").html(rCode);
+	var msg = "";
+	msg += aName + ", " + mName + ", " + iName + ", " + rName;
+	$("div#testDesc").html (msg);
+	
+	
+	$("input[name^='invalidType']").prop('checked', false);	
+	$("#ddlComment").val(null).trigger('change');
+
+	$('#deleleDialog').modal('show');
+ }
+ 
+/**********************************************************************************/
+/**********************************************************************************/
+  function AMIRGridOnDeleteAllRow()
+ {
+	var index;
+	var aCode = "", mCode = "", iCode = "", rCode = "";
+	var aName = "", mName = "", iName = "", rName = "";
+
+	var filter = jQuery('#AMIRGrid').getGridParam("postData").filters;	
+	if (filter !== undefined)
+	{
+		var jsonFilter = JSON.parse(filter);	
+		var rules = jsonFilter.rules;
+
+		for (index  in rules) 
+		{
+		
+			switch(rules[index]['field'])
+			{
+				case 'Analyte':
+   					aCode = rules[index]['data'];
+   					break;
+				case 'AnalyteName':
+   					aName = rules[index]['data'];
+ 					break;
+				case 'Method':
+   					mCode = rules[index]['data'];
+   					break;
+				case 'MethodName':
+   					mName = rules[index]['data'];
+   					break;
+				case 'Instrument':
+   					iCode = rules[index]['data'];
+   					break;
+				case 'InstrumentName':
+   					iName = rules[index]['data'];
+   					break;
+				case 'Reagent':
+   					rCode = rules[index]['data'];
+   					break;
+				case 'ReagentName':
+   					rName = rules[index]['data'];
+   					break;
+   				default:
+   					break;
+			}
+		}
+	}
+	
+	var numRec = $("#AMIRGrid").jqGrid('getGridParam', 'records');
+	if ( ! $("#AMIRGrid").getGridParam('postData').filters || numRec > 1000 )
+	{
+		var msg = "<br><div class='alert alert-danger' role='alert'>Cannot delete more than 1000 records !!! Please specify search criteria";
+		bootbox.alert (msg);
+		return;
+	}
+	
+	
+	ConfirmDeleteAll (numRec);
+	//alert("In Progress" + aCode + "--- " + mCode + "--- " + iCode + "--- " + rCode);
+	
+	 //var parm = "A = " + aCode + "    M = " + mCode+ "     I = " + iCode+ "    R = " + rCode +
+	 //			"    AN = " + aName + "    MN = " + mName + "     IN = " + iName + "    RN = " + rName;
+	 //alert(parm);
+	// Set status = ##class(NGConfig.ValidConfig).DeleteAll(ACode, AName, MCode, MName, ICode, IName, RCode, RName, AFlag, MFlag, IFlag, RFlag, CommentId, EditBy, .ErrorCode, .ErrorMessage, .ErrorList)
+ } 
+ 
+ function ConfirmDeleteAll (numRec)
+ {
+	var msg = "<br><div class='alert alert-danger' role='alert'>&nbsp;&nbsp;Are you sure, you want to delele all " + numRec + " valid configuration? THIS CANNOT BE UNDONE !!!!!.</div>";
+	bootbox.confirm({
+		title: "<div class='btn-danger' role='alert'>&nbsp;&nbsp;Delete All?</div>",
+	    message: msg,
+	    buttons: {
+	        confirm: {
+	            label: 'Yes',
+	            className: 'btn-danger'
+	        },
+	        cancel: {
+	            label: 'No',
+	            className: 'btn-default'
+	        }
+	    },
+	    callback: function (result) {
+	        //console.log('This was logged in the callback: ' + result);
+	        if (result)
+	        	SecondDeleteAllConfirm ();
+	    }
+	});	 
+ }
+ function SecondDeleteAllConfirm ()
+ {
+	var msg = $("#AMIRGrid").getGridParam('postData').filters;
+	//msg += aName + ", " + mName + ", " + iName + ", " + rName;
+	$("div#testDesc").html (msg);
+	
+	var queryData = JSON.parse ($("#AMIRGrid").getGridParam('postData').filters);
+	var query = "<p>";
+	for (var i=0; i<queryData.rules.length; i++)
+	{
+		query += " " + queryData.rules[i].field + " = " + queryData.rules[i].data;
+	}
+	query += "</p>";
+	$("div#testDesc").html ("Delete all where : " + query);
+	
+	$("input[name^='invalidType']").prop('checked', false);	
+	$("#ddlComment").val(null).trigger('change');
+
+	$('#deleleDialog').modal('show');	 
+	$('#btnDeleteInvalid').hide();	 
+	$('#btnDeleteAllInvalid').show();	 
+ }
+ 
+/**********************************************************************************/
+/**********************************************************************************/
+  function LabEnrollExcelOnClick()
+ {
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow');    	
+	var AMIRrowData = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var ACode = AMIRrowData.Analyte;
+	var MCode = AMIRrowData.Method;
+	var ICode = AMIRrowData.Instrument;
+	var RCode = AMIRrowData.Reagent;
+	var AName = AMIRrowData.AnalyteName;
+	var MName = AMIRrowData.MethodName;
+	var IName = AMIRrowData.InstrumentName;
+	var RName= AMIRrowData.ReagentName;
+	var url = 'json/LabEnrollToExcel.csp?' + 
+			  'Analyte=' + ACode  + '&Method=' + MCode + '&Instrument=' + ICode+ '&Reagent=' + RCode+
+			  '&AnalyteName=' + AName + '&MethodName=' + MName + '&InstrumentName=' + IName+ '&ReagentName=' + RName;
+	//alert("URL: " + url);
+	$("#frmExcel").attr("action",url);
+	$("#frmExcel").submit();
+    
+}
+
+ /**********************************************************************************/
+/**********************************************************************************/
+  function LabResultExcelOnClick()
+ {
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow');    	
+	var AMIRrowData = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var ACode = AMIRrowData.Analyte;
+	var MCode = AMIRrowData.Method;
+	var ICode = AMIRrowData.Instrument;
+	var RCode = AMIRrowData.Reagent;
+	var AName = AMIRrowData.AnalyteName;
+	var MName = AMIRrowData.MethodName;
+	var IName = AMIRrowData.InstrumentName;
+	var RName= AMIRrowData.ReagentName;
+	var url = 'json/LabResultToExcel.csp?' + 
+			  'Analyte=' + ACode  + '&Method=' + MCode + '&Instrument=' + ICode+ '&Reagent=' + RCode+
+			  '&AnalyteName=' + AName + '&MethodName=' + MName + '&InstrumentName=' + IName+ '&ReagentName=' + RName;
+	//alert("URL: " + url);
+	$("#frmExcel").attr("action",url);
+	$("#frmExcel").submit();
+    
+}
+
+/**********************************************************************************/
+/**********************************************************************************/
+  function AMIRGridOnSelectRow()
+ {
+	$('#NoLabId').val('');
+	$('#NoResultId').val('');
+	
+	var rowId =$('#AMIRGrid').jqGrid('getGridParam','selrow');    	
+	var AMIRrowData = jQuery('#AMIRGrid').jqGrid ('getRowData',rowId);   
+	var analyte = AMIRrowData.Analyte;
+	var method = AMIRrowData.Method;
+	var instrument = AMIRrowData.Instrument;
+	var reagent = AMIRrowData.Reagent;
+    #server(..GetSelectedRowDetail( analyte, method, instrument, reagent))#;
+    
+}
+
+
+
+ /**********************************************************************************/
+/**********************************************************************************/
+ function AMIRGridSearch()
+ {
+	var index;
+	var aCode = "", mCode = "", iCode = "", rCode = "";
+	var aName = "", mName = "", iName = "", rName = "";
+
+	var filter = jQuery('#AMIRGrid').getGridParam("postData").filters;	
+	if (filter !== undefined)
+	{
+		var jsonFilter = JSON.parse(filter);	
+		var rules = jsonFilter.rules;
+
+		for (index  in rules) 
+		{
+		
+			switch(rules[index]['field'])
+			{
+				case 'Analyte':
+   					aCode = rules[index]['data'];
+   					break;
+				case 'AnalyteName':
+   					aName = rules[index]['data'];
+ 					break;
+				case 'Method':
+   					mCode = rules[index]['data'];
+   					break;
+				case 'MethodName':
+   					mName = rules[index]['data'];
+   					break;
+				case 'Instrument':
+   					iCode = rules[index]['data'];
+   					break;
+				case 'InstrumentName':
+   					iName = rules[index]['data'];
+   					break;
+				case 'Reagent':
+   					rCode = rules[index]['data'];
+   					break;
+				case 'ReagentName':
+   					rName = rules[index]['data'];
+   					break;
+   				default:
+   					break;
+			}
+		}
+	}
+	
+	SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName);
+
+ }
+
+
+
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function SearchNow(aCode, mCode, iCode, rCode, aName, mName, iName, rName)
+ {
+
+    var url = 'json/GetValidConfig.csp?';
+    if( aCode.length > 0) url = url + 'Analyte=' + aCode ;
+    if( mCode.length > 0) url = url + '&Method=' + mCode ;
+    if( iCode.length > 0) url = url + '&Instrument=' + iCode ;
+    if( rCode.length > 0) url = url + '&Reagent=' + rCode ;
+    if( aName.length > 0) url = url + '&AnalyteName=' + aName; 
+    if( mName.length > 0) url = url + '&MethodName=' + mName ;
+    if( iName.length > 0) url = url + '&InstrumentName=' + iName ;
+    if( rName.length > 0) url = url + '&ReagentName=' + rName; 
+
+	$('#NoLabId').val('');
+	$('#NoResultId').val('');
+	$("#AMIRGrid").jqGrid("clearGridData"); 		
+	$("#AMIRGrid").jqGrid('setGridParam', {url: url});
+	$('#AMIRGrid').trigger('reloadGrid');
+
+ }
+ 
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function ViewLabEnrollDialog(aCode, mCode,iCode,rCode, aName, mName, iName, rName)
+ {
+	
+	var labInfo = "Analyte: " + aName + " (" +aCode + ") " + 
+				    " , Method: " + mName + " (" +mCode + "),  " + 
+				  " Instrument: " + iName + " (" +iCode + ") " +
+				   " , Reagent: " + rName + " (" +rCode + ") " 
+	
+	$('#LabEnrollHeader').html(labInfo );
+
+    var url = 'json/GetLabEnrollConfig.csp?';
+    if( aCode.length > 0) url = url + 'Analyte=' + aCode ;
+    if( mCode.length > 0) url = url + '&Method=' + mCode ;
+    if( iCode.length > 0) url = url + '&Instrument=' + iCode ;
+    if( rCode.length > 0) url = url + '&Reagent=' + rCode ;
+
+  	$("#LabEnrollGrid").jqGrid({
+   		url: url,
+        mtype: "GET",
+		styleUI : 'Bootstrap',
+        datatype: "json",
+        colModel: [
+                    { label:'Program Name', name: 'ProgramName', width: 30 },
+                    { label:'Program Code', name: 'ProgramCode', width: 14 ,align:'center'  },
+                    { label: 'Lab Number', name: 'LabNo', width: 12 , align:'center'  },
+                    { label: 'Country', name: 'Country', width: 16 }
+                ],
+				viewrecords: true,
+                width: 600,
+                height: 300,
+              	rowNum: 10,
+   				rowList:[10,20,50,100],
+                pager: "#LabEnrollGridPager" ,
+                
+     });
+		
+	$('#LabEnrollDialog').modal('show');
+
+	$("#LabEnrollGrid").jqGrid("clearGridData"); 		
+	$("#LabEnrollGrid").jqGrid('setGridParam', {url: url});
+	$('#LabEnrollGrid').trigger('reloadGrid');
+}
+
+ /**********************************************************************************/
+/**********************************************************************************/
+
+ function ViewLabResultDialog(aCode, mCode,iCode,rCode, aName, mName, iName, rName)
+ {
+	
+	var labInfo = "Analyte: " + aName + " (" +aCode + ") " + 
+				    " , Method: " + mName + " (" +mCode + "),  " + 
+				  " Instrument: " + iName + " (" +iCode + ") " +
+				   " , Reagent: " + rName + " (" +rCode + ") " 
+	
+	$('#LabResultHeader').html(labInfo );
+
+    var url = 'json/GetLabResultConfig.csp?';
+    if( aCode.length > 0) url = url + 'Analyte=' + aCode ;
+    if( mCode.length > 0) url = url + '&Method=' + mCode ;
+    if( iCode.length > 0) url = url + '&Instrument=' + iCode ;
+    if( rCode.length > 0) url = url + '&Reagent=' + rCode ;
+
+  	$("#LabResultGrid").jqGrid({
+   		url: url,
+        mtype: "GET",
+		styleUI : 'Bootstrap',
+        datatype: "json",
+        colModel: [
+                    { label:'Program Name', name: 'ProgramName', width: 30 },
+                    { label:'Program Code', name: 'ProgramCode', width: 14 ,align:'center'  },
+                    { label: 'Lab Number', name: 'LabNo', width: 12 , align:'center'  },
+                    { label: 'Country', name: 'Country', width: 16 }
+                ],
+				viewrecords: true,
+                width: 600,
+                height: 300,
+              	rowNum: 10,
+   				rowList:[10,20,50,100],
+                pager: "#LabResultGridPager" ,
+                
+     });
+		
+	$('#LabResultDialog').modal('show');
+
+	$("#LabResultGrid").jqGrid("clearGridData"); 		
+	$("#LabResultGrid").jqGrid('setGridParam', {url: url});
+	$('#LabResultGrid').trigger('reloadGrid');
+	 
+}
+/**********************************************************************************/
+/**********************************************************************************/
+function returnViewLabEnrollLink(cellValue, options, rowData, action) 
+{
+	var aCode = "", mCode = "", iCode = "", rCode = "", aName = "", mName = "", iName = "", rName = "";
+	if( (rowData != 'undefined') && (rowData != null))
+	{
+		aCode = rowData.Analyte;
+		mCode = rowData.Method;
+		iCode = rowData.Instrument;
+		rCode = rowData.Reagent;
+		aName = rowData.AnalyteName;
+		mName = rowData.MethodName;
+		iName = rowData.InstrumentName;
+		rName = rowData.ReagentName ;
+	
+	}
+	var parm = '"' + aCode + '", "' + mCode + '", "' + iCode +  '", "' + rCode +
+			   '", "' + aName + '", "' + mName +  '", "' + iName +  '", "'  + rName + '"';
+    var url =  "<a class='pointer' href='#' onclick='ViewLabEnrollDialog(" +  parm  + ")' >" +
+    	   " <font color='blue'> " + cellValue + "</a>";
+	
+	return url;
+	
+}
+
+/**********************************************************************************/
+/**********************************************************************************/
+function returnViewLabResultLink(cellValue, options, rowData, action) 
+{
+	
+	//console.log ("Result");
+	var aCode = "", mCode = "", iCode = "", rCode = "", aName = "", mName = "", iName = "", rName = "";
+	if( (rowData != 'undefined') && (rowData != null))
+	{
+		aCode = rowData.Analyte;
+		mCode = rowData.Method;
+		iCode = rowData.Instrument;
+		rCode = rowData.Reagent;
+		aName = rowData.AnalyteName;
+		mName = rowData.MethodName;
+		iName = rowData.InstrumentName;
+		rName = rowData.ReagentName ;
+	
+	}
+	var parm = '"' + aCode + '", "' + mCode + '", "' + iCode +  '", "' + rCode +
+			   '", "' + aName + '", "' + mName +  '", "' + iName +  '", "'  + rName + '"';
+    var url =  "<a class='pointer' href='#' onclick='ViewLabResultDialog(" +  parm  + ")' >" +
+    	   " <font color='blue'> " + cellValue + "</a>";
+	
+	return url;
+	
+}
+
+function InitializeCommentSearch ()
+{
+$('#ddlComment').select2({
+	  ajax: {
+	    url: 'json/GetJsonDataAPI.csp?reqType=csearch',
+	    dataType: 'json',
+	    delay: 250,
+	    data: function (params) {
+		    return {
+			    query: params.term // search term
+		    };
+	    },
+	    processResults: function (data) {
+		   // parse the result into the format functions we do not need to alter the remote JSON data
+	      return {
+		      results: data
+	      };
+	    },	    
+	  },
+	  minimumInputLength : 2
+	  
+	}).on ("change", function (e) {
+		//LoadTable ();	
+		
+	});		
+	 //$("#ddlComment").select2({dropdownCssClass : 'bigdrop'}); 
+}
+function btnDeleteInvalid_OnClick (deleteAll)
+{
+	var msg = "";
+	var reasonCount = $("input:checkbox[name=invalidType]:checked").length;
+	if (reasonCount == 0)
+	{
+		bootbox.alert ("Must provide at least one reason to delete a valid configuration !!!!!! ");
+		return;
+	}
+	msg = GetDeleteConfigDetail ();
+	var title = "<div class='alert alert-danger'>Delete Valid Configuration</div>";
+	var confirmMsg = "Are you sure you want to delete the following configuration? <br>";
+	if (deleteAll)
+	{
+		var numRec = $("#AMIRGrid").jqGrid('getGridParam', 'records');
+		confirmMsg = " Are you sure you want to delete ALL " + numRec + " configuration(s)? <br>";
+		title = "<div class='alert alert-danger'><span class='glyphicon glyphicon-exclamation-sign' aria-hidden='true'></span>&nbsp;&nbsp; DANGER: Delete Multiple Configuration</div>";
+	}
+	
+	bootbox.confirm({
+	    title: title,
+	    message: "<div class='alert alert-danger'>" + confirmMsg + msg + "</div>",
+	    buttons: {
+	        cancel: {
+	            label: '<i class="fa fa-times"></i> Cancel',
+	            className: 'btn-default'
+	        },
+	        confirm: {
+	            label: '<i class="fa fa-check"></i> Confirm',
+	            className: 'btn-danger'
+	        }
+	    },
+	    callback: function (result) {
+	        //console.log('This was logged in the callback: ' + result);
+	        if (result)
+	        {
+	        	//#call(..AddNewValidConfig( analyte, method, instrument, reagent, progInclude, progExclude))#
+	        	//LoadTable ();
+	        	if (deleteAll)
+	        	{
+		        	DeleteValidConfig (1);
+		        	return;
+	        	}
+	        	//delete single configuration
+	        	DeleteValidConfig (0);
+	        }
+	        else
+	        {
+	        }
+	    }
+	});
+}
+
+function GetDeleteConfigDetail ()
+{
+	var testDesc = $("#testDesc").html();
+	var comment  = $("#ddlComment :selected").text();
+	
+	var s = "<li>Test: " +  testDesc  + "</li>";
+	
+	s += "Reason: <br><ol>";
+	$("input:checkbox[name=invalidType]:checked").each(function() {
+	   var type = $(this).val();
+       switch (type)
+       {
+	       case "IA":
+	       	s += "<li> Invalid Analyte</li>";
+	       	break;
+	       case "IM":
+	       	s += "<li> Invalid Method</li>";
+	       	break;
+	       case "II":
+	       	s += "<li> Invalid Instrument</li>";
+	       	break;
+	       case "IR":
+	       	s += "<li> Invalid Reagent</li>";
+	       	break;
+	       	
+       }
+       
+       
+  	});	
+	
+	s += "<li>Detailed Comment: " +  comment  + "</li>";
+	s += "</ol>";
+	
+	
+	return s;
+}
+function DeleteValidConfig (deleteAll)
+{
+	var IA = 0, IM = 0 , II = 0 , IR = 0;
+	$("input:checkbox[name=invalidType]:checked").each(function() {
+	   var type = $(this).val();
+       switch (type)
+       {
+	       case "IA":
+	       		IA = 1;
+	       	break;
+	       case "IM":
+	       	    IM = 1;
+	       	break;
+	       case "II":
+	       		II = 1;
+	       	break;
+	       case "IR":
+	       		IR = 1;
+	       	break;
+	       	
+       }
+      }); 
+      var aCode = $("#aCode").html();	  	
+	  var mCode = $("#mCode").html();
+	  var iCode = $("#iCode").html();
+	  var rCode = $("#rCode").html();
+      var commentObjID = $("#ddlComment").val();
+      
+      if (!deleteAll)
+      {	      
+      	#server(..DeleteValidConfig(aCode, mCode, iCode, rCode, IA, IM, II, IR, commentObjID))#;
+      }
+      else
+      {
+	      DeleteAllValidConfig (IA, IM, II, IR, commentObjID);
+      }
+      
+      //bootbox.alert ('Deleting ... ' + aCode + "|" + mCode);
+            
+      $("#deleleDialog").modal('hide');
+            
+}
+
+function DeleteAllValidConfig(IA, IM, II, IR, commentObjID)
+{
+	var index;
+	var aCode = "", mCode = "", iCode = "", rCode = "";
+	var aName = "", mName = "", iName = "", rName = "";
+
+	var filter = jQuery('#AMIRGrid').getGridParam("postData").filters;	
+	if (filter !== undefined)
+	{
+		var jsonFilter = JSON.parse(filter);	
+		var rules = jsonFilter.rules;
+
+		for (index  in rules) 
+		{
+		
+			switch(rules[index]['field'])
+			{
+				case 'Analyte':
+   					aCode = rules[index]['data'];
+   					break;
+				case 'AnalyteName':
+   					aName = rules[index]['data'];
+ 					break;
+				case 'Method':
+   					mCode = rules[index]['data'];
+   					break;
+				case 'MethodName':
+   					mName = rules[index]['data'];
+   					break;
+				case 'Instrument':
+   					iCode = rules[index]['data'];
+   					break;
+				case 'InstrumentName':
+   					iName = rules[index]['data'];
+   					break;
+				case 'Reagent':
+   					rCode = rules[index]['data'];
+   					break;
+				case 'ReagentName':
+   					rName = rules[index]['data'];
+   					break;
+   				default:
+   					break;
+			}
+		}
+	}
+	console.log ( "iA" + IA + " iM " +  IM  + "iI " +  II + "iR " +  IR + " coment " + commentObjID  );
+	
+	#server(..DeleteValidConfigAll(aCode,aName, mCode, mName, iCode, iName, rCode, rName, IA, IM, II, IR, commentObjID))#;
+	
+	
+	
+}
+</script>
+
+ <!-- **********************************************************************************
+	 **********************************************************************************-->
+
+
+
+<script language="Cache" method="GetSelectedRowDetail" arguments="ACode:%String, MCode:%String,ICode:%String, RCode:%String" runat="SERVER">
+	set CurrentCycle = "", NoLab = 0, NoResult = 0 , NoLabOnline = 0, NoResultOnline = 0
+	set Status = ##class(NGUtils.ValidTestConfig).GetTestDetail(ACode, MCode, ICode, RCode,  .NoLab, .NoResult, .ErrorCode, .ErrorMessage) 
+
+	if (Status)
+	{
+		&js<$('#CurrentCycleId').text('#(CurrentCycle)#');>
+		&js<$('#NoLabId').text('#(NoLab)#');>
+		&js<$('#NoResultId').text('#(NoResult)#');>
+	}
+	else
+	{
+		&js<alert('#(ErrorMessage)#');>
+	}
+
+</script>
+		
+
+<script language="Cache" runat="server" method="DeleteValidConfig" 
+	arguments="analyte:%String, method:%String, instrument:%String, reagent:%String
+			, aFlag: %Integer, mFlag:%Integer, iFlag: %Integer, rFlag: %Integer, commentID: %Integer" 
+			returntype="%String" runat="SERVER">			  
+	//ClassMethod Delete(Analyte As %Integer, Method As %Integer, Instrument As %Integer, Reagent As %Integer, 
+	//AFlag As %Integer, MFlag As %Integer, IFlag As %Integer, RFlag As %Integer, CommentId As %Integer, EditBy As %String, ByRef ErrorCode As %Integer, ByRef ErrorMessage As %String) As %Boolean
+	set strOut = "", errorCode = 0 , errorMessage = ""	
+			  	
+    set countSaved = 0, totalCount = 0
+    Set editBy = " ", detail = "Delete ValidConfig"
+	Set editBy = %session.Data("USER_NAME")
+	Set detail = %session.Data("USER_IP") _ " -> Delete ValidConfig"
+
+
+	Set status = ##class(NGConfig.ValidConfig).Delete(analyte, method, instrument, reagent, aFlag, mFlag, iFlag, rFlag, commentID, editBy, .errorCode, .errorMessage)		 
+	if ('status)
+	{
+		Set outputMsg  = errorMessage
+		&js< bootbox.alert("Error encounter: " + #(errorMessage)# ); >
+		quit		
+	}
+	else
+	{			
+		Set outputMsg = " successfully saved "
+		&js< bootbox.alert("The configuration successfully deleted!!!!!"); >
+		//&js< LoadTable(); >
+		
+		&js< $('#AMIRGrid').trigger( 'reloadGrid' ); >;
+	}
+	
+</script>
+
+<script language="Cache" runat="server" method="DeleteValidConfigAll" 
+	arguments="analyte:%String, analyteName:%String, method:%String, methodName:%String
+			, instrument:%String, instrumentName:%String, reagent:%String, reagentName:%String 
+			, aFlag: %Integer, mFlag:%Integer, iFlag: %Integer, rFlag: %Integer, commentID: %Integer" 
+			returntype="%String" runat="SERVER">			  
+
+	set strOut = "", errorCode = 0 , errorMessage = ""	, errorList = "", status = 1
+			  	
+    set countSaved = 0, totalCount = 0
+    Set editBy = " ", detail = "Delete All ValidConfig"
+	Set editBy = %session.Data("USER_NAME")
+	Set detail = %session.Data("USER_IP") _ " -> Delete All ValidConfig"
+
+	Set condition = analyte _ " aName- " _  analyteName _ " method " _ method _ " mName- " _  
+						methodName _ " instrument " _  instrument _ " iName " _  instrumentName _ " r " _  reagent _ " rName- " _  reagentName
+				  _ "iA" _ aFlag _ " iM " _  mFlag  _ "iI " _  iFlag _ "iR " _  rFlag _ " coment " _ commentID  
+	//&js< bootbox.alert("method , instrument " + "#(condition)#" + "  " ); >
+
+	Set status = ##class(NGConfig.ValidConfig).DeleteAll(analyte, analyteName, method, methodName, instrument, instrumentName, reagent, reagentName, aFlag, mFlag, iFlag, rFlag, commentID, editBy, .errorCode, .errorMessage, .errorList)
+	
+	if ('status)
+	{
+		Set outputMsg  = errorMessage
+		&js< bootbox.alert("Error encounter: " + #(errorMessage)# ); >
+		quit		
+	}
+	else
+	{			
+		Set outputMsg = " successfully saved "
+		&js< bootbox.alert("All configuration(s) successfully deleted!!!!!"); >
+		//&js< LoadTable(); >
+		
+		&js< $('#AMIRGrid').trigger( 'reloadGrid' ); >;
+	}
+	
+</script>

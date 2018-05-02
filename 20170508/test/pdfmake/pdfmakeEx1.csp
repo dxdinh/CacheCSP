@@ -1,0 +1,32 @@
+ 
+<html lang='en'>
+<head>
+ 	<meta charset='utf-8'>
+ 	<title>my first pdfmake example</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script> 	
+ 	<script src='pdfmake.min.js'></script>
+ 	<script src='vfs_fonts.js'></script>
+<script language="javascript">
+
+function makepdf ()
+{
+	 var docDefinition = { content: 'Dinh This is an sample PDF printed with pdfMake' };
+	// open the PDF in a new window
+ 	pdfMake.createPdf(docDefinition).open();
+}
+
+$(function () {
+	console.log ('Loading');
+	makepdf();
+});
+
+
+</script>
+ </head>
+
+<body>
+
+		<!-- Put your page code here -->
+		My page body
+</body>
+</html>

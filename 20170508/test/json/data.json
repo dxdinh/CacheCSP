@@ -1,0 +1,9 @@
+{
+        "page": "1",
+        "records": "3",
+        "rows": [
+            { "Id": "1", IsActive:"N", CategoryName: "Name 1", "ComboDuration": "83123a" },
+            { "Id": "2", IsActive:"N", CategoryName: "Name 3", "ComboDuration": "83432a" },
+            { "Id": "3", IsActive:"N", CategoryName: "Name 2", "ComboDuration": "83566a" }
+        ]
+ }

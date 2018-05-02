@@ -1,0 +1,82 @@
+<script language="Cache" method="OnPreHTTP" arguments="" returntype="%Boolean"> 
+Set %response.ContentType="application/vnd.ms-excel"
+Set fileName = "LabResultConfiguration"
+Do %response.SetHeader("content-disposition","attachment;filename=LabResultConfiguration.xls")
+Set %response.Expires="20"
+Do %response.SetHeader("cache-control", "private")
+Quit 1
+</script>
+
+<script language="Cache" runat="server">
+	Set ACode   = $get(%request.Data("Analyte",1))
+	Set MCode = $get(%request.Data("Method",1))
+	Set ICode   = $get(%request.Data("Instrument",1))
+	Set RCode = $get(%request.Data("Reagent",1))
+	Set AName   = $get(%request.Data("AnalyteName",1))
+	Set MName = $get(%request.Data("MethodName",1))
+	Set IName   = $get(%request.Data("InstrumentName",1))
+	Set RName = $get(%request.Data("ReagentName",1))
+	set PCSList = "", ErrorCode = 0, ErrorMessage = ""
+	
+	w "<h2> Total Labs Submitted Result </h2>"
+	w "<h3>Analyte: ",AName, " (", ACode ,")</h3>"
+	w "<h3>Method: ",MName, " (", MCode ,")</h3>"
+	w "<h3>Instrument: ",IName, " (", ICode ,")</h3>"
+	w "<h3>Reagent: ",RName, " (", RCode ,")</h3>"
+	
+	set Status = ##class(NGUtils.ValidTestConfig).GetProgCycleSample(ACode,.PCSList, .ErrorCode, .ErrorMessage)
+	set Sql = "Select distinct ProgCycleSample->ProgCycle->Program->Name ProgramName, " _
+			  " ProgCycleSample->ProgCycle->Program->Code ProgramCode, " _
+			  " LabAnalyzer->Lab->LabNo, %EXACT (LabAnalyzer->Lab->Site->SiteAddress->Country->countryname) CountryName " _
+			  " from NGStat.LabResult " _
+			  " where ProgCycleSample in (" _ PCSList _ ") " _
+			  " and TestSpec->Analyte = " _ACode _ " and TestSpec->Method = " _ MCode _
+			  " And TestSpec->Instrument = " _ICode _ " and TestSpec->Reagent = " _ RCode _
+			  " Order by LabAnalyzer->Lab->LabNo"
+ 	set rsLab = ##class(%Library.ScrollableResultSet).%New()
+  	set status = rsLab.Prepare(Sql)
+  	set status = rsLab.Execute()
+  	Set rowCount = rsLab.Count()
+w "<table id=""datagrid"" class=""tablesorter"">"
+	w "<thead>"
+	w "<tr>"
+		w "<th>&nbsp;</th>"							
+		w "<th>Program Name</th>"
+		w "<th>Program Code</th>"
+		w "<th>Lab Number</th>"
+		w "<th>Country</th>"
+	w "</tr>"
+	w "</thead>"
+	If (status)
+	{
+		Set count = 0
+		While (rsLab.Next())
+		{
+			Set count = count + 1
+			Set programName = $get(rsLab.Data("ProgramName"))
+			Set programCode	= $get(rsLab.Data("ProgramCode"))
+			Set labNumber 	= $get(rsLab.Data("LabNo"))																		
+			Set countryName	= $get(rsLab.Data("CountryName"))
+				
+				w "<tr>"				
+				Do ..WriteTD(count)
+				Do ..WriteTD(programName)
+				Do ..WriteTD(programCode)
+				Do ..WriteTD(labNumber)	
+				Do ..WriteTD(countryName)
+				w "</tr>"			
+		}	
+		
+	Do rsLab.%Close()
+	Set rsLab = ""
+	Quit
+	}
+			
+
+</script>
+<script language="Cache" method="WriteTD"  arguments="value: %String"  >
+	w "<td>", value ,"</td>"
+</script>
+
+
+

@@ -1,0 +1,31 @@
+<script language="Cache"  runat="server">
+	set ErrorMessage = "", ErrorCode = 0
+	Set ACode = "", AName = "" , MCode = "" , MName = "" 
+	set ICode = "" , IName = "",RCode = "" , RName = ""
+	Set SortedBy = "" , JsonData = "", PCode = ""	
+	set PageNo = 1, PageSize = 100, RowCount = 0, ViewOption = 0
+	
+ 	set ACode = $get(%request.Data("Analyte",1))
+ 	set AName = $get(%request.Data("AnalyteName",1))
+ 	set MCode = $get(%request.Data("Method",1))
+ 	set MName = $get(%request.Data("MethodName",1))
+ 
+ 	set ICode = $get(%request.Data("Instrument",1))
+ 	set IName = $get(%request.Data("InstrumentName",1))
+ 	set RCode = $get(%request.Data("Reagent",1))
+ 	set RName = $get(%request.Data("ReagentName",1))
+ 
+ 	set PageNo = $get(%request.Data("page",1))
+ 	set PageSize = $get(%request.Data("rows",1))
+ 	set ViewOption = $get(%request.Data("ViewOption",1))
+	
+	if (ViewOption = 1)
+	{
+		 set Status = ##class(NGUtils.ValidTestConfig).JSONPagingInvalidTestConfig(PageNo, PageSize , ACode, AName,MCode, MName, ICode, IName, RCode, RName,.JsonData, .ErrorCode,.ErrorMessage)
+	}
+	else 
+	{
+		 set Status = ##class(NGUtils.ValidTestConfig).JSONPagingValidTestConfig(PageNo, PageSize , ACode, AName,MCode, MName, ICode, IName, RCode, RName,.JsonData, .ErrorCode,.ErrorMessage)
+	}
+w ##class(%ZEN.Auxiliary.jsonProvider).%WriteJSONFromObject(,JsonData,,,,"twe")
+</script>

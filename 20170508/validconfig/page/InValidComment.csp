@@ -1,0 +1,212 @@
+<!-- bootstrap table -->
+<link href="plugins/bootstrap-table/bootstrap-table.css" rel="stylesheet">
+<script src="plugins/bootstrap-table/bootstrap-table.js"></script>
+
+<script src="plugins/bootbox/bootbox.min.4.4.0.js"></script>
+
+<style>
+.top-buffer { margin-top:20px; }
+</style>
+
+<div class="container">
+  <form>
+    <div class="form-group row">
+      <label for="ivcid" class="col-sm-1 form-control-label">ID</label>
+      <div class="col-sm-1">
+        <input type="text" class="form-control" id="ivcid" placeholder="ID" readonly>
+      </div>
+    </div>
+	
+	<div class="form-group row">
+		<label for="ddlLang" class="col-sm-1 form-control-label">Language</label>
+		<div class="col-sm-2">
+			<select id="ddlLang" class="form-control">
+			<option value=""></option>
+				<option value="en">English</option>
+				<option value="es">Spanish</option>
+				<option value="fr">French</option>
+				<option value="it">Italian</option>
+				<option value="ru">Russian</option>
+			</select>
+		</div>
+	</div>
+	
+	<div class="form-group row">
+		<label for="comment" class="col-sm-1 form-control-label">Comment:</label>
+		<div class="col-sm-5">
+			<textarea class="form-control" rows = 5 id="comment"></textarea>
+		</div>
+	</div>
+	
+	<div class="form-group row">
+		<div class="col-sm-1">
+		</div>
+		<div class="col-sm-1">
+			<button type="button" class="btn btn-primary" id="btnSave" onclick="Save()">Save</button>
+		</div>
+		<div class="col-sm-1">
+			<button type="button" class="btn btn-primary" id="btnCancel" onclick="Cancel()">Cancel</button>
+		</div>
+	</div>
+  </form>
+</div>
+
+<div class="container">
+	<img src="../images/sloading.gif" id="loading-indicator" style="display:none" />
+
+	<div class="input-group"> <span class="input-group-addon">Search</span>
+	    <input id="inputFilter" type="text" class="form-control" placeholder="Type ID or Description here...">
+	          <div class="input-group-btn">
+        <button class="btn btn-default" type="submit" onclick="Search()"><i class="glyphicon glyphicon-search"></i></button>
+      </div>
+	</div>
+
+	<div id="commentTable">
+		<table id="bsTable" class="table"
+		data-striped = "true" data-toggle="table" data-toolbar="#toolbar"
+		data-height="450" 		
+		data-pagination="true" data-click-to-select="true" 
+		data-url="">
+			<thead>
+				<tr>
+					<th data-field="IVCId" data-sortable="true" width="20">ID</th>
+					<th data-field="IVCDId" data-visible="false" width="20">IVCD Id</th>
+					<th data-field="LanguageKey" data-sortable="true" width="20">Language</th>
+					<th data-field="Description" data-sortable="true" width="300">Description</th>
+					<th data-field="EditBy" data-sortable="true" width="100">EditBy</th>
+					<th data-field="EditOn" data-sortable="true" width="100">EditOn</th>
+					<th data-field="Detail" data-sortable="true" width="300">Detail</th>
+					<th data-field="action" data-formatter="actionFormatter" data-events="actionEvents">Action</th>
+				</tr>
+			</thead>
+		</table>
+	</div>		
+</div>
+    
+<script type="text/javascript">
+$(document).ready(function () {	
+	Initialize();
+	
+	(function ($) {
+	    $('#inputFilter').keyup(function (event) {
+			var searchString = $(this).val();
+			if ((searchString == "") || (event.keyCode == 13))
+			{
+				LoadTable(searchString);
+			}
+	    })
+	}(jQuery));
+});	
+    	        	
+function Initialize() {
+	LoadTable();		
+}
+
+function LoadTable(searchString) {
+	var url = "json/GetJsonDataAPI.csp";
+	$.getJSON( url ,{reqType: "getComments", strSearch: searchString})
+	.done (function (json) 
+	{
+		var tblData = json.children;
+		
+	 	$('#bsTable').bootstrapTable({
+	        data: tblData
+	    });
+	    	    
+	    $('#bsTable').bootstrapTable ('load', json.children	);
+	})
+	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    console.log( "Request Failed: " + err );
+	});	
+}
+
+function actionFormatter(value, row, index) {
+    return [
+        '<a class="edit ml10" href="javascript:void(0)" title="Edit">',
+        '<i class="glyphicon glyphicon-edit"></i>',
+        '</a>'
+    ].join('');
+}
+
+window.actionEvents = {
+    'click .edit': function (e, value, row, index) {
+        
+        $('#ivcid').val(row.IVCId);
+        $('#ddlLang').val(row.LanguageKey);
+        $('#comment').val(row.Description);
+    }
+};
+
+function Save() {
+	var CId = $('#ivcid').val();
+	var langKey = $('#ddlLang').val();
+	var description = $('#comment').val();
+	 
+	if(langKey == '')
+	{
+		bootbox.alert('Please select a Language.');	
+		return;
+	}
+	
+	if(description == '')
+	{
+		bootbox.alert('Description cannot be empty.');	
+		return;
+	}	
+	
+	if(description.length > 1000)
+	{
+		bootbox.alert('Description cannot be more than 1000 characters.');	
+		return;
+	}	
+		
+	#server(..SaveComment(CId, langKey, description))#;
+	
+	$('#ddlLang').val('');
+	$('#comment').val('');
+	$('#ivcid').val('');
+}
+
+function Cancel() {
+	$('#ddlLang').val('');
+	$('#comment').val('');
+	$('#ivcid').val('');
+}
+
+function Search() {
+	var searchString = $('#inputFilter').val();
+	console.log('searchString = ' + searchString);
+	LoadTable(searchString);
+}
+
+$(document).ajaxSend(function(event, request, settings) {
+    $('#loading-indicator').show();
+});
+
+$(document).ajaxComplete(function(event, request, settings) {
+    $('#loading-indicator').hide();
+});
+ 
+</script>
+
+<script language="Cache" method="SaveComment" arguments="CId:%String, langKey:%String, description:%String">
+	Set ErrorCode = 0
+	Set ErrorMessage = ""
+	Set EditBy = %session.Data("USER_NAME")
+	Set Detail = %session.Data("USER_IP") _ " Save Comments"
+	Set bStatus = 0
+	
+	//&js<alert('#(CId)#' + '#(langKey)#' + ' ' + '#(description)#' + ' ' + '#(EditBy)#' + ' ' + '#(Detail)#');>
+	
+	Set bStatus = ##class(NGConfig.InValidComment).Save(CId, langKey, description, EditBy, Detail, .ErrorCode, .ErrorMessage)
+	If (bStatus)
+	{
+		&js<bootbox.alert(#(..QuoteJS("Comment successfully saved." ))#);>
+		&js<LoadTable();>
+	}
+	Else
+	{
+		&js<bootbox.alert('#(ErrorMessage)#');>	
+	}		
+</script>

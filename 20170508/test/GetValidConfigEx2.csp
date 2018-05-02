@@ -1,0 +1,227 @@
+{
+	"records":"54929",
+	"page":1,
+	"total":20,
+	"rows":[
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 466,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "Beckman Coulter Immunotech",
+    "AMIR": "395|38|466|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 1030,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "DRG International, Inc.",
+    "AMIR": "395|38|1030|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 1177,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "DIAsource ImmunoAssays",
+    "AMIR": "395|38|1177|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 2481,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "Perkin Elmer Lambda 35",
+    "AMIR": "395|38|2481|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 63,
+    "MethodName": "Chemiluminescence",
+    "Instrument": 1254,
+    "InstrumentName": "Chemiluminescence",
+    "Reagent": 6,
+    "ReagentName": "Abbott ARCHITECT c16000",
+    "AMIR": "395|63|1254|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 692,
+    "MethodName": "LC-MS-MS",
+    "Instrument": 1543,
+    "InstrumentName": "LC-MS-MS",
+    "Reagent": 6,
+    "ReagentName": "Tandem Mass Spectrometer",
+    "AMIR": "395|692|1543|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 692,
+    "MethodName": "LC-MS-MS",
+    "Instrument": 1958,
+    "InsrumentName": "LC-MS-MS",
+    "Reagent": 6,
+    "ReagentName": "Waters Mass Spectrometer",
+    "AMIR": "395|692|1958|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 692,
+    "MethodName": "LC-MS-MS",
+    "Instrument": 2657,
+    "InstrumentName": "LC-MS-MS",
+    "Reagent": 6,
+    "ReagentName": "Shimadzu Liquid Chromatographs",
+    "AMIR": "395|692|2657|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 692,
+    "MethodName": "LC-MS-MS",
+    "Instrument": 2734,
+    "InstrumentName": "LC-MS-MS",
+    "Reagent": 6,
+    "ReagentName": "Shimadzu LC-MS",
+    "AMIR": "395|692|2734|6"
+  },
+  {
+    "Analyte": 395,
+    "AnalyteName": "11-Deoxycortisol",
+    "Method": 692,
+    "MethodName": "LC-MS-MS",
+    "Instrument": 2833,
+    "InstrumentName": "LC-MS-MS",
+    "Reagent": 6,
+    "ReagentName": "Thermo Scientific UltiMate 3000",
+    "AMIR": "395|692|2833|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 16,
+    "MethodName": "GC-MS",
+    "Instrument": 28,
+    "InstrumentName": "GC-MS",
+    "Reagent": 6,
+    "ReagentName": "Abbott ADx",
+    "AMIR": "396|16|28|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 16,
+    "MethodName": "GC-MS",
+    "Instrument": 710,
+    "InstrumentName": "GC-MS",
+    "Reagent": 6,
+    "ReagentName": "Waters",
+    "AMIR": "396|16|710|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 16,
+    "MethodName": "GC-MS",
+    "Instrument": 1285,
+    "InstrumentName": "GC-MS",
+    "Reagent": 6,
+    "ReagentName": "Shimadzu QP GC-MS",
+    "AMIR": "396|16|1285|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 22,
+    "MethodName": "HPLC",
+    "Instrument": 947,
+    "InstrumentName": "HPLC",
+    "Reagent": 6,
+    "ReagentName": "Abbott CELL-DYN 1300",
+    "AMIR": "396|22|947|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 34,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "AAS, Flame",
+    "AMIR": "396|38|34|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 154,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "DiaSorin GammaCoat",
+    "AMIR": "396|38|154|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 182,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "Siemens Coat-A-Count",
+    "AMIR": "396|38|182|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 212,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "Manual",
+    "AMIR": "396|38|212|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 341,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "MP Biomedicals",
+    "AMIR": "396|38|341|6"
+  },
+  {
+    "Analyte": 396,
+    "AnalyteName": "17-Alpha-Hydroxyprogesterone",
+    "Method": 38,
+    "MethodName": "RIA",
+    "Instrument": 443,
+    "InstrumentName": "RIA",
+    "Reagent": 6,
+    "ReagentName": "Cisbio Bioassays",
+    "AMIR": "396|38|443|6"
+  }
+]
+}
